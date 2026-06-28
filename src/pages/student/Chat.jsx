@@ -188,8 +188,7 @@ const Chat = () => {
   };
 
   return (
-    <div className="chat-portal-container">
-      <div className="glass chat-shell">
+    <div className="chat-shell">
         {/* --- Sidebar (Threads List) --- */}
         <div className={`chat-sidebar ${activeThreadId ? 'mobile-hidden' : ''}`}>
           <div className="chat-sidebar-header">
@@ -334,7 +333,6 @@ const Chat = () => {
           )}
         </div>
       </div>
-    </div>
   );
 };
 
