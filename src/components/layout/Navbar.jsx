@@ -26,7 +26,8 @@ const Navbar = () => {
       <div className="container nav-container-row">
         {/* Logo */}
         <Link to="/" className="nav-logo-link">
-          <img src={logo} alt="PhongTroGenZ" className="nav-logo-img" />
+          <img src={logo} alt="Homie" className="nav-logo-img" />
+          <span className="nav-logo-text">Homie</span>
         </Link>
 
         {!displayUser ? (

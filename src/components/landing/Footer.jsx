@@ -82,13 +82,13 @@ const Footer = () => {
             <h4 className="heading-3 mb-6" style={{ fontSize: '1.25rem' }}>Liên Hệ</h4>
             <ul className="flex-col gap-4" style={{ listStyle: 'none', padding: 0 }}>
               <li className="flex items-center gap-3" style={{ color: 'rgba(255,255,255,0.6)' }}>
-                <Phone size={20} /> Hotline: 1900 15xx
+                <Phone size={20} /> Hotline: 19001239
               </li>
               <li className="flex items-center gap-3" style={{ color: 'rgba(255,255,255,0.6)' }}>
                 <Mail size={20} /> cskh@homie.vn
               </li>
               <li className="flex items-center gap-3" style={{ color: 'rgba(255,255,255,0.6)' }}>
-                <MapPin size={20} /> 123 Đường XYZ, TP. Thủ Đức, HCM
+                <MapPin size={20} /> Số 669 Đỗ Mười, khu phố 13, phường Linh Xuân, TP.HCM
               </li>
             </ul>
           </div>

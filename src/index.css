@@ -1348,6 +1348,15 @@ input:checked + .slider:before { transform: translateX(26px); }
   flex-shrink: 0;
 }
 
+.nav-logo-text {
+  color: var(--text-main);
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1;
+  white-space: nowrap;
+}
+
 .nav-logo {
   /* The logo PNG has internal padding — 36px gives the right visual weight */
   height: 36px;
@@ -1554,6 +1563,7 @@ input:checked + .slider:before { transform: translateX(26px); }
 .nav-logo-link {
   display: flex;
   align-items: center;
+  gap: 8px;
   text-decoration: none;
   flex-shrink: 0;
 }
@@ -2417,6 +2427,26 @@ input:checked + .slider:before { transform: translateX(26px); }
   cursor: grabbing;
 }
 
+.tinder-card-hit-area {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: inherit;
+  touch-action: none;
+}
+
+.tinder-card-hit-area:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.85);
+  outline-offset: -6px;
+}
+
 .tinder-card-img-wrapper {
   position: relative;
   width: 100%;
@@ -2988,5 +3018,3 @@ body:has(.roommates-app-container) .navbar-app .nav-app-link.active {
     padding: 0;
   }
 }
-
-

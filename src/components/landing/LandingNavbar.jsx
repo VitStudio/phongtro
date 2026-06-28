@@ -31,7 +31,8 @@ const LandingNavbar = () => {
     }}>
       <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Link to="/" className="nav-logo-link">
-          <img src={logo} alt="HOMIE.VN" className="nav-logo" />
+          <img src={logo} alt="Homie" className="nav-logo" />
+          <span className="nav-logo-text">Homie</span>
         </Link>
 
         {/* Desktop Menu */}
