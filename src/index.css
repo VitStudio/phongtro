@@ -3842,3 +3842,22 @@ body:has(.roommates-app-container) .navbar-app .nav-app-link.active {
   }
 }
 
+/* ── Strip navbar gap when immediately followed by full-screen chat shell ── */
+.navbar-app:has(+ .chat-shell),
+.navbar-app + .chat-shell ~ * {
+  /* noop for chaining */
+}
+
+/* Adjacent sibling: navbar directly before the full-screen chat shell */
+.navbar-app:has(+ * + .chat-shell) { margin-bottom: 0; }
+.navbar-app + .chat-shell { margin-top: 0; }
+
+/* Simpler: target when chat-shell is the next element after navbar-app */
+nav.navbar-app + .chat-shell {
+  margin-top: 0 !important;
+}
+
+/* Zero out the navbar bottom margin on the chat page (adjacent sibling selector) */
+.navbar-app:has(~ .chat-shell) {
+  margin-bottom: 0 !important;
+}
