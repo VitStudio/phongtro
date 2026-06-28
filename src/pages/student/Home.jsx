@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/useAuth';
 import ListingCard from '../../components/ui/ListingCard';
-import { Search, Filter, MapPin, DollarSign } from 'lucide-react';
+import { Search, Filter } from 'lucide-react';
 
 const Home = () => {
   const { listings } = useAuth();
@@ -24,23 +24,27 @@ const Home = () => {
   return (
     <div className="flex-col gap-8 mb-8">
       <div className="glass" style={{ padding: 'clamp(20px, 6vw, 40px) 16px', textAlign: 'center', borderRadius: '24px', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', top: -50, left: -50, width: 200, height: 200, background: 'var(--primary)', filter: 'blur(100px)', opacity: 0.3 }}></div>
-        <div style={{ position: 'absolute', bottom: -50, right: -50, width: 200, height: 200, background: 'var(--secondary)', filter: 'blur(100px)', opacity: 0.3 }}></div>
+        <div className="home-blur-spot" style={{ top: -50, left: -50, width: 200, height: 200, background: 'var(--primary)' }}></div>
+        <div className="home-blur-spot" style={{ bottom: -50, right: -50, width: 200, height: 200, background: 'var(--secondary)' }}></div>
         
         <h1 className="heading-1 mb-4" style={{ fontSize: 'clamp(1.75rem, 5vw, 2.5rem)' }}>Tìm phòng trọ GenZ siêu tốc</h1>
         <p className="text-muted mb-8" style={{ fontSize: 'clamp(0.95rem, 3vw, 1.125rem)' }}>Phòng đẹp, giá tốt, cọc giữ chỗ 100% an toàn.</p>
         
         <div className="flex justify-center">
           <div className="glass flex items-center" style={{ padding: '6px clamp(8px, 3vw, 16px)', width: '100%', maxWidth: '600px', borderRadius: '9999px' }}>
-            <Search className="text-muted" size={20} style={{ marginRight: 8, flexShrink: 0 }} />
+            <label htmlFor="search-input" style={{ display: 'flex', alignItems: 'center' }}>
+              <Search className="text-muted" size={20} style={{ marginRight: 8, flexShrink: 0 }} aria-hidden="true" />
+            </label>
             <input 
+              id="search-input"
               type="text" 
               placeholder="Khu vực, tên đường (VD: Làng đại học...)" 
-              style={{ border: 'none', background: 'transparent', outline: 'none', width: '100%', padding: '10px 0', fontSize: '0.95rem' }}
+              style={{ border: 'none', background: 'transparent', width: '100%', padding: '10px 0', fontSize: '0.95rem' }}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              aria-label="Tìm kiếm phòng trọ"
             />
-            <button className="btn btn-primary" style={{ marginLeft: 8, padding: '8px 16px', fontSize: '0.9rem', flexShrink: 0 }}>Tìm</button>
+            <button type="button" className="btn btn-primary" style={{ marginLeft: 8, padding: '8px 16px', fontSize: '0.9rem', flexShrink: 0 }} aria-label="Tìm kiếm">Tìm</button>
           </div>
         </div>
       </div>
@@ -49,18 +53,21 @@ const Home = () => {
         <h2 className="heading-2" style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)' }}>Phòng trọ nổi bật</h2>
         
         <div className="flex gap-2 flex-wrap">
+          <label htmlFor="price-filter" style={{ display: 'none' }}>Lọc theo giá</label>
           <select 
+            id="price-filter"
             className="input-field" 
             style={{ padding: '8px 12px', background: 'white', fontSize: '0.9rem' }}
             value={priceFilter}
             onChange={(e) => setPriceFilter(e.target.value)}
+            aria-label="Lọc theo giá"
           >
             <option value="">Tất cả mức giá</option>
             <option value="under2">Dưới 2 triệu</option>
             <option value="2to4">2 triệu - 4 triệu</option>
             <option value="above4">Trên 4 triệu</option>
           </select>
-          <button className="btn btn-outline" style={{ padding: '8px 12px', fontSize: '0.9rem' }}>
+          <button type="button" className="btn btn-outline" style={{ padding: '8px 12px', fontSize: '0.9rem' }}>
             <Filter size={16} /> Lọc thêm
           </button>
         </div>

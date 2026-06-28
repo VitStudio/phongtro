@@ -6,6 +6,8 @@ export const VIP_MONTHLY_DAYS = 30;
 export const VIP_ANNUAL_DAYS = 365;
 export const BASIC_LISTING_PRICE = 20000;
 
+import { listingImages } from './listingImages';
+
 export const DATA_VERSION = 'v3';
 
 const now = new Date();
@@ -58,7 +60,7 @@ export const mockListings = [
     price: 3500000,
     area: 28,
     address: '45 Lý Thường Kiệt, P.14, Q.10, TP.HCM',
-    images: ['https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&q=80&w=800'],
+    images: listingImages.l1,
     status: 'approved',
     is_vip: true,
     created_at: '2026-06-20T08:00:00.000Z'
@@ -71,7 +73,7 @@ export const mockListings = [
     price: 1800000,
     area: 18,
     address: '12 Tô Vĩnh Diện, Khu Phố 6, TP Thủ Đức, TP.HCM',
-    images: ['https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&q=80&w=800'],
+    images: listingImages.l2,
     status: 'approved',
     is_vip: false,
     created_at: '2026-06-22T09:30:00.000Z'
@@ -84,7 +86,7 @@ export const mockListings = [
     price: 4200000,
     area: 35,
     address: '88 Nguyễn Đình Chiểu, P.4, Q.3, TP.HCM',
-    images: ['https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=800'],
+    images: listingImages.l3,
     status: 'approved',
     is_vip: true,
     created_at: '2026-06-24T14:00:00.000Z'
@@ -97,7 +99,7 @@ export const mockListings = [
     price: 2800000,
     area: 25,
     address: '30 Phan Đăng Lưu, P.3, Q.Bình Thạnh, TP.HCM',
-    images: ['https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&q=80&w=800'],
+    images: listingImages.l4,
     status: 'pending',
     is_vip: false,
     created_at: '2026-06-26T10:00:00.000Z'
@@ -155,18 +157,5 @@ export const mockRoommates = [
     description: 'Mình đang ở một mình tại căn hộ mini 40m2 khu Phú Nhuận. Muốn tìm thêm 1 bạn nữ để chia tiền nhà. Nhà có đầy đủ nội thất, view đẹp, an ninh tốt.\nƯu tiên người đi làm hoặc sinh viên năm cuối, độc lập tài chính.',
     created_at: '2026-06-19T12:00:00.000Z',
     status: 'active'
-  }
-];
-
-export const mockTransactions = [
-  {
-    id: 'txn_init_1',
-    user_id: 'u2',
-    type: 'deposit',
-    amount: 980000,
-    method: 'vietqr',
-    status: 'completed',
-    created_at: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-    description: 'Nạp tiền lần đầu'
   }
 ];

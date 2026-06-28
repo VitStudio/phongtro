@@ -1,184 +1,180 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { useCallback, useEffect, useMemo, useReducer } from 'react';
 import { mockUsers, mockListings, mockAppointments, mockRoommates, DATA_VERSION, VIP_MONTHLY_PRICE, VIP_ANNUAL_PRICE, VIP_MONTHLY_DAYS, VIP_ANNUAL_DAYS } from '../data/mockData';
 import localforage from 'localforage';
+import { AuthContext } from './useAuth';
 
-const AuthContext = createContext();
+const initialAuthState = {
+  isInitializing: true,
+  users: [],
+  listings: [],
+  appointments: [],
+  roommates: [],
+  transactions: [],
+  currentUser: null
+};
 
-export const useAuth = () => useContext(AuthContext);
+const authReducer = (state, action) => {
+  if (action.type === 'setData') {
+    return { ...state, ...action.payload };
+  }
+  return state;
+};
+
+const persistItem = (key, value, label) => {
+  localforage.setItem(key, value).catch(e => console.error(`localforage ${label} persist error:`, e));
+};
+
+const removePersistedItem = (key, label) => {
+  localforage.removeItem(key).catch(e => console.error(`localforage ${label} remove error:`, e));
+};
+
+const applySubscriptionExpirations = (userList, now = new Date()) =>
+  userList.map(u => {
+    if (!u.subscription || u.subscription.status !== 'active') return u;
+    if (new Date(u.subscription.expires_at) <= now) {
+      return { ...u, subscription: { ...u.subscription, status: 'expired' } };
+    }
+    return u;
+  });
 
 export const AuthProvider = ({ children }) => {
-  const [isInitializing, setIsInitializing] = useState(true);
-  
-  const [users, setUsers] = useState([]);
-  const [listings, setListings] = useState([]);
-  const [appointments, setAppointments] = useState([]);
-  const [roommates, setRoommates] = useState([]);
-  const [transactions, setTransactions] = useState([]);
-  const [currentUser, setCurrentUser] = useState(null);
+  const [state, dispatch] = useReducer(authReducer, initialAuthState);
+  const { isInitializing, users, listings, appointments, roommates, transactions, currentUser } = state;
 
-  // Initialize data from IndexedDB, with version-based reset for fresh mock data
+  const setData = useCallback((payload) => {
+    dispatch({ type: 'setData', payload });
+  }, []);
+
   useEffect(() => {
+    let isMounted = true;
+
     const initDB = async () => {
       try {
         const storedVersion = await localforage.getItem('homie_data_version');
         const isStale = storedVersion !== DATA_VERSION;
 
-        // Reset all data when version changes (new mock data available)
         if (isStale) {
           await localforage.clear();
           await localforage.setItem('homie_data_version', DATA_VERSION);
         }
 
-        const storedUsers       = isStale ? null : await localforage.getItem('homie_users');
-        const storedListings    = isStale ? null : await localforage.getItem('homie_listings');
-        const storedAppointments = isStale ? null : await localforage.getItem('homie_appointments');        const storedRoommates   = isStale ? null : await localforage.getItem('homie_roommates');
+        const storedUsers = isStale ? null : await localforage.getItem('homie_users');
+        const storedListings = isStale ? null : await localforage.getItem('homie_listings');
+        const storedAppointments = isStale ? null : await localforage.getItem('homie_appointments');
+        const storedRoommates = isStale ? null : await localforage.getItem('homie_roommates');
         const storedTransactions = isStale ? null : await localforage.getItem('homie_transactions');
         const storedCurrentUser = isStale ? null : await localforage.getItem('homie_current_user');
 
-        // --- Users ---
-        if (!storedUsers || storedUsers.length === 0) {
-          await localforage.setItem('homie_users', mockUsers);
-          setUsers(mockUsers);
-          // Auto-login as student on first load
-          if (!storedCurrentUser) {
-            const student = mockUsers.find(u => u.id === 'u1');
-            if (student) {
-              await localforage.setItem('homie_current_user', student);
-              setCurrentUser(student);
-            }
-          } else {
-            setCurrentUser(storedCurrentUser);
-          }
+        const initialUsers = applySubscriptionExpirations(
+          !storedUsers || storedUsers.length === 0 ? mockUsers : storedUsers
+        );
+        const initialListings = !storedListings || storedListings.length === 0 ? mockListings : storedListings;
+        const initialAppointments = !storedAppointments || storedAppointments.length === 0 ? mockAppointments : storedAppointments;
+        const initialRoommates = !storedRoommates || storedRoommates.length === 0 ? mockRoommates : storedRoommates;
+        const initialTransactions = storedTransactions || [];
+
+        let initialCurrentUser = null;
+        if (storedCurrentUser) {
+          initialCurrentUser = initialUsers.find(u => u.id === storedCurrentUser.id) || storedCurrentUser;
         } else {
-          setUsers(storedUsers);
-          if (storedCurrentUser) setCurrentUser(storedCurrentUser);
+          initialCurrentUser = initialUsers.find(u => u.id === 'u1') || null;
         }
 
-        // --- Listings ---
-        if (!storedListings || storedListings.length === 0) {
-          await localforage.setItem('homie_listings', mockListings);
-          setListings(mockListings);
-        } else {
-          setListings(storedListings);
-        }
+        await Promise.all([
+          localforage.setItem('homie_users', initialUsers),
+          localforage.setItem('homie_listings', initialListings),
+          localforage.setItem('homie_appointments', initialAppointments),
+          localforage.setItem('homie_roommates', initialRoommates),
+          localforage.setItem('homie_transactions', initialTransactions),
+          initialCurrentUser
+            ? localforage.setItem('homie_current_user', initialCurrentUser)
+            : localforage.removeItem('homie_current_user')
+        ]);
 
-        // --- Appointments ---
-        if (!storedAppointments || storedAppointments.length === 0) {
-          await localforage.setItem('homie_appointments', mockAppointments);
-          setAppointments(mockAppointments);
-        } else {
-          setAppointments(storedAppointments);
-        }
-
-        // --- Roommates ---
-        if (!storedRoommates || storedRoommates.length === 0) {
-          await localforage.setItem('homie_roommates', mockRoommates);
-          setRoommates(mockRoommates);
-        } else {
-          setRoommates(storedRoommates);
-        }
-
-        // --- Transactions ---
-        if (!storedTransactions) {
-          await localforage.setItem('homie_transactions', []);
-          setTransactions([]);
-        } else {
-          setTransactions(storedTransactions);
+        if (isMounted) {
+          setData({
+            users: initialUsers,
+            listings: initialListings,
+            appointments: initialAppointments,
+            roommates: initialRoommates,
+            transactions: initialTransactions,
+            currentUser: initialCurrentUser,
+            isInitializing: false
+          });
         }
       } catch (error) {
         console.error('Error initializing database from localforage:', error);
-      } finally {
-        setIsInitializing(false);
+        if (isMounted) setData({ isInitializing: false });
       }
     };
 
     initDB();
-  }, []);
 
-  // Persist state to IndexedDB (only after initialization is done)
-  useEffect(() => {
-    if (!isInitializing) localforage.setItem('homie_users', users).catch(e => console.error('localforage users persist error:', e));
-  }, [users, isInitializing]);
+    return () => {
+      isMounted = false;
+    };
+  }, [setData]);
 
-  useEffect(() => {
-    if (!isInitializing) localforage.setItem('homie_listings', listings).catch(e => console.error('localforage listings persist error:', e));
-  }, [listings, isInitializing]);
-
-  useEffect(() => {
-    if (!isInitializing) localforage.setItem('homie_appointments', appointments).catch(e => console.error('localforage appointments persist error:', e));
-  }, [appointments, isInitializing]);
-
-  useEffect(() => {
-    if (!isInitializing) localforage.setItem('homie_roommates', roommates).catch(e => console.error('localforage roommates persist error:', e));
-  }, [roommates, isInitializing]);
-
-  useEffect(() => {
-    if (!isInitializing) localforage.setItem('homie_transactions', transactions).catch(e => console.error('localforage transactions persist error:', e));
-  }, [transactions, isInitializing]);
-
-  useEffect(() => {
-    if (!isInitializing) {
-      if (currentUser) {
-        const latest = users.find(u => u.id === currentUser.id);
-        localforage.setItem('homie_current_user', latest || currentUser).catch(e => console.error('localforage currentUser persist error:', e));
-      } else {
-        localforage.removeItem('homie_current_user').catch(e => console.error('localforage currentUser remove error:', e));
-      }
-    }
-  }, [currentUser, users, isInitializing]);
-
-  // ---------- Auth ----------
-  const login = (userId) => {
-    // Always find the freshest copy from the users array
+  const login = useCallback((userId) => {
     const user = users.find(u => u.id === userId);
-    if (user) setCurrentUser(user);
-  };
+    if (!user) return;
+    setData({ currentUser: user });
+    persistItem('homie_current_user', user, 'currentUser');
+  }, [setData, users]);
 
-  const logout = () => setCurrentUser(null);
+  const logout = useCallback(() => {
+    setData({ currentUser: null });
+    removePersistedItem('homie_current_user', 'currentUser');
+  }, [setData]);
 
-  // ---------- Wallet ----------
-  /**
-   * Update wallet balance for a user.
-   * Also keeps currentUser in sync so navbar wallet display is always reactive.
-   */
-  const updateWallet = (userId, amount) => {
-    setUsers(prev => prev.map(u =>
+  const updateWallet = useCallback((userId, amount) => {
+    const nextUsers = users.map(u =>
       u.id === userId ? { ...u, wallet_balance: u.wallet_balance + amount } : u
-    ));
-    setCurrentUser(prev => {
-      if (!prev || prev.id !== userId) return prev;
-      return { ...prev, wallet_balance: (prev.wallet_balance || 0) + amount };
-    });
-  };
+    );
+    const nextCurrentUser = currentUser?.id === userId
+      ? { ...currentUser, wallet_balance: (currentUser.wallet_balance || 0) + amount }
+      : currentUser;
 
-  // ---------- Listings ----------
-  const addListing = (newListing) => setListings(prev => [newListing, ...prev]);
+    setData({ users: nextUsers, currentUser: nextCurrentUser });
+    persistItem('homie_users', nextUsers, 'users');
+    if (nextCurrentUser) persistItem('homie_current_user', nextCurrentUser, 'currentUser');
+  }, [currentUser, setData, users]);
 
-  const updateListingStatus = (id, status) =>
-    setListings(prev => prev.map(l => l.id === id ? { ...l, status } : l));
+  const addListing = useCallback((newListing) => {
+    const nextListings = [newListing, ...listings];
+    setData({ listings: nextListings });
+    persistItem('homie_listings', nextListings, 'listings');
+  }, [listings, setData]);
 
-  // ---------- Appointments ----------
-  const addAppointment = (appointment) =>
-    setAppointments(prev => [...prev, appointment]);
+  const updateListingStatus = useCallback((id, status) => {
+    const nextListings = listings.map(l => l.id === id ? { ...l, status } : l);
+    setData({ listings: nextListings });
+    persistItem('homie_listings', nextListings, 'listings');
+  }, [listings, setData]);
 
-  const updateAppointmentStatus = (id, status) =>
-    setAppointments(prev => prev.map(a => a.id === id ? { ...a, status } : a));
+  const addAppointment = useCallback((appointment) => {
+    const nextAppointments = [...appointments, appointment];
+    setData({ appointments: nextAppointments });
+    persistItem('homie_appointments', nextAppointments, 'appointments');
+  }, [appointments, setData]);
 
-  // ---------- Subscription Management ----------
+  const updateAppointmentStatus = useCallback((id, status) => {
+    const nextAppointments = appointments.map(a => a.id === id ? { ...a, status } : a);
+    setData({ appointments: nextAppointments });
+    persistItem('homie_appointments', nextAppointments, 'appointments');
+  }, [appointments, setData]);
 
-  /** Check all users for expired subscriptions (run on init) */
   const checkSubscriptionStatus = useCallback(() => {
-    const now = new Date();
-    setUsers(prev => prev.map(u => {
-      if (!u.subscription || u.subscription.status !== 'active') return u;
-      if (new Date(u.subscription.expires_at) <= now) {
-        return { ...u, subscription: { ...u.subscription, status: 'expired' } };
-      }
-      return u;
-    }));
-  }, []);
+    const nextUsers = applySubscriptionExpirations(users);
+    const nextCurrentUser = currentUser
+      ? nextUsers.find(u => u.id === currentUser.id) || currentUser
+      : null;
 
-  /** Buy or renew a VIP subscription */
+    setData({ users: nextUsers, currentUser: nextCurrentUser });
+    persistItem('homie_users', nextUsers, 'users');
+    if (nextCurrentUser) persistItem('homie_current_user', nextCurrentUser, 'currentUser');
+  }, [currentUser, setData, users]);
+
   const buySubscription = useCallback((userId, planType = 'monthly') => {
     const isAnnual = planType === 'annual';
     const price = isAnnual ? VIP_ANNUAL_PRICE : VIP_MONTHLY_PRICE;
@@ -188,75 +184,64 @@ export const AuthProvider = ({ children }) => {
     if (!user) return false;
     if (user.wallet_balance < price) return false;
 
-    // Calculate new expiry (additive stacking)
     const now = new Date();
     const currentExpiry = user.subscription?.expires_at
       ? new Date(user.subscription.expires_at)
       : now;
-    // If already expired, start from now
     const startFrom = currentExpiry > now ? currentExpiry : now;
     const newExpiry = new Date(startFrom.getTime() + days * 24 * 60 * 60 * 1000);
+    const subscription = {
+      plan: 'vip',
+      status: 'active',
+      started_at: now.toISOString(),
+      expires_at: newExpiry.toISOString()
+    };
 
-    // Deduct wallet (updateWallet handles both users + currentUser state)
-    updateWallet(userId, -price);
+    const nextUsers = users.map(u =>
+      u.id === userId
+        ? { ...u, wallet_balance: u.wallet_balance - price, subscription }
+        : u
+    );
+    const nextCurrentUser = currentUser?.id === userId
+      ? { ...currentUser, wallet_balance: (currentUser.wallet_balance || 0) - price, subscription }
+      : currentUser;
 
-    // Set subscription (wallet_balance already updated by updateWallet)
-    setUsers(prev => prev.map(u =>
-      u.id === userId ? {
-        ...u,
-        subscription: {
-          plan: 'vip',
-          status: 'active',
-          started_at: now.toISOString(),
-          expires_at: newExpiry.toISOString()
-        }
-      } : u
-    ));
-    setCurrentUser(prev => {
-      if (!prev || prev.id !== userId) return prev;
-      return {
-        ...prev,
-        subscription: {
-          plan: 'vip',
-          status: 'active',
-          started_at: now.toISOString(),
-          expires_at: newExpiry.toISOString()
-        }
-      };
-    });
+    setData({ users: nextUsers, currentUser: nextCurrentUser });
+    persistItem('homie_users', nextUsers, 'users');
+    if (nextCurrentUser) persistItem('homie_current_user', nextCurrentUser, 'currentUser');
 
     return true;
-  }, [users, updateWallet]);
+  }, [currentUser, setData, users]);
 
-  /** Update user profile fields */
   const updateUserProfile = useCallback((userId, updates) => {
-    setUsers(prev => prev.map(u =>
+    const nextUsers = users.map(u =>
       u.id === userId ? { ...u, ...updates } : u
-    ));
-    setCurrentUser(prev => {
-      if (!prev || prev.id !== userId) return prev;
-      return { ...prev, ...updates };
-    });
-  }, []);
+    );
+    const nextCurrentUser = currentUser?.id === userId
+      ? { ...currentUser, ...updates }
+      : currentUser;
 
-  // ---------- Roommates ----------
-  const addRoommatePost = (post) => setRoommates(prev => [post, ...prev]);
+    setData({ users: nextUsers, currentUser: nextCurrentUser });
+    persistItem('homie_users', nextUsers, 'users');
+    if (nextCurrentUser) persistItem('homie_current_user', nextCurrentUser, 'currentUser');
+  }, [currentUser, setData, users]);
 
-  // ---------- Transactions ----------
-  const addTransaction = (transaction) =>
-    setTransactions(prev => [
+  const addRoommatePost = useCallback((post) => {
+    const nextRoommates = [post, ...roommates];
+    setData({ roommates: nextRoommates });
+    persistItem('homie_roommates', nextRoommates, 'roommates');
+  }, [roommates, setData]);
+
+  const addTransaction = useCallback((transaction) => {
+    const nextTransactions = [
       { id: `txn_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`, created_at: new Date().toISOString(), ...transaction },
-      ...prev
-    ]);
+      ...transactions
+    ];
+    setData({ transactions: nextTransactions });
+    persistItem('homie_transactions', nextTransactions, 'transactions');
+  }, [setData, transactions]);
 
-  // Run subscription check on init
-  useEffect(() => {
-    if (!isInitializing) {
-      checkSubscriptionStatus();
-    }
-  }, [isInitializing, checkSubscriptionStatus]);
-
-  const value = {
+  const value = useMemo(() => ({
     currentUser,
     login,
     logout,
@@ -275,7 +260,26 @@ export const AuthProvider = ({ children }) => {
     addRoommatePost,
     transactions,
     addTransaction
-  };
+  }), [
+    addAppointment,
+    addListing,
+    addRoommatePost,
+    addTransaction,
+    appointments,
+    buySubscription,
+    checkSubscriptionStatus,
+    currentUser,
+    listings,
+    login,
+    logout,
+    roommates,
+    transactions,
+    updateAppointmentStatus,
+    updateListingStatus,
+    updateUserProfile,
+    updateWallet,
+    users
+  ]);
 
   if (isInitializing) {
     return (

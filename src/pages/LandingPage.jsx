@@ -14,7 +14,7 @@ const LandingPage = () => {
   }, []);
 
   return (
-    <div style={{ background: 'var(--bg-color)', minHeight: '100vh', width: '100vw', overflowX: 'hidden' }}>
+    <main style={{ background: 'var(--bg-color)', minHeight: '100vh', overflowX: 'hidden' }}>
       <LandingNavbar />
       <HeroSection />
       <ProblemSection />
@@ -23,7 +23,7 @@ const LandingPage = () => {
       <PricingSection />
       <ProcessSection />
       <Footer />
-    </div>
+    </main>
   );
 };
 

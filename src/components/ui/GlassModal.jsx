@@ -1,49 +1,65 @@
-import React from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import { X } from 'lucide-react';
 
 const GlassModal = ({ isOpen, onClose, title, children }) => {
+  const triggerRef = useRef(null);
+  const dialogRef = useRef(null);
+  const contentRef = useRef(null);
+  const restoreFocusTimerRef = useRef(null);
+
+  useEffect(() => {
+    if (!isOpen) return undefined;
+
+    const dialog = dialogRef.current;
+    if (!dialog) return undefined;
+
+    triggerRef.current = document.activeElement;
+    if (!dialog.open) dialog.showModal();
+
+    const focusTimer = setTimeout(() => contentRef.current?.focus(), 50);
+
+    return () => {
+      clearTimeout(focusTimer);
+      if (dialog.open) dialog.close();
+    };
+  }, [isOpen]);
+
+  const handleClose = useCallback(() => {
+    onClose();
+    if (restoreFocusTimerRef.current) clearTimeout(restoreFocusTimerRef.current);
+    restoreFocusTimerRef.current = setTimeout(() => triggerRef.current?.focus(), 50);
+  }, [onClose]);
+
   if (!isOpen) return null;
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        top: 0, left: 0, right: 0, bottom: 0,
-        backgroundColor: 'rgba(15, 23, 42, 0.4)',
-        backdropFilter: 'blur(4px)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 100,
-        padding: 'clamp(16px, 4vw, 0px)',
-        overflowY: 'auto'
+    <dialog
+      ref={dialogRef}
+      aria-label={title}
+      className="modal-overlay"
+      onCancel={(e) => {
+        e.preventDefault();
+        handleClose();
       }}
-      onClick={onClose}
     >
       <div
-        className="glass"
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          width: '100%',
-          maxWidth: '500px',
-          padding: 'clamp(20px, 5vw, 32px)',
-          position: 'relative',
-          backgroundColor: 'rgba(255, 255, 255, 0.9)',
-          margin: 'auto'
-        }}
+        ref={contentRef}
+        tabIndex={-1}
+        className="glass modal-content-box"
       >
-        <button
-          onClick={onClose}
-          style={{ position: 'absolute', top: 16, right: 16, color: 'var(--text-muted)' }}
+        <button type="button"
+          onClick={handleClose}
+          aria-label="Đóng"
+          style={{ position: 'absolute', top: 16, right: 16, color: 'var(--text-muted)', padding: 4, borderRadius: 8 }}
         >
-          <X size={24} />
+          <X size={24} aria-hidden="true" />
         </button>
 
         <h2 className="heading-2 mb-6" style={{ fontSize: 'clamp(1.25rem, 4vw, 1.5rem)' }}>{title}</h2>
 
         {children}
       </div>
-    </div>
+    </dialog>
   );
 };
 

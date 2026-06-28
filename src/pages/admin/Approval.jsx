@@ -1,7 +1,7 @@
 import React from 'react';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/useAuth';
 import { Check, X, Building2, ClipboardList } from 'lucide-react';
-import { useToast } from '../../context/ToastContext';
+import { useToast } from '../../context/useToast';
 
 const Approval = () => {
   const { listings, updateListingStatus } = useAuth();
@@ -10,6 +10,7 @@ const Approval = () => {
   const pendingListings = listings.filter(l => l.status === 'pending');
   const approvedListings = listings.filter(l => l.status === 'approved');
   const rejectedListings = listings.filter(l => l.status === 'rejected');
+  const reviewedListings = listings.filter(l => l.status !== 'pending');
 
   const handleApprove = (id) => {
     updateListingStatus(id, 'approved');
@@ -118,14 +119,14 @@ const Approval = () => {
                   </td>
                   <td style={{ padding: '16px 24px' }}>
                     <div className="flex gap-2">
-                      <button
+                      <button type="button"
                         className="btn btn-outline"
                         style={{ padding: '8px 16px', fontSize: '0.875rem', color: 'var(--success)', borderColor: 'var(--success)', gap: '6px' }}
                         onClick={() => handleApprove(listing.id)}
                       >
                         <Check size={16} /> Duyệt
                       </button>
-                      <button
+                      <button type="button"
                         className="btn btn-outline"
                         style={{ padding: '8px 16px', fontSize: '0.875rem', color: 'var(--danger)', borderColor: 'var(--danger)', gap: '6px' }}
                         onClick={() => handleReject(listing.id)}
@@ -150,7 +151,7 @@ const Approval = () => {
       </div>
 
       {/* All listings overview */}
-      {listings.filter(l => l.status !== 'pending').length > 0 && (
+      {reviewedListings.length > 0 && (
         <div>
           <h2 className="heading-2 mb-4" style={{ fontSize: 'clamp(1.4rem, 3.5vw, 1.75rem)' }}>Tổng quan tất cả tin đăng</h2>
           <div className="glass table-wrapper">
@@ -164,7 +165,7 @@ const Approval = () => {
                 </tr>
               </thead>
               <tbody>
-                {listings.filter(l => l.status !== 'pending').map(listing => (
+                {reviewedListings.map(listing => (
                   <tr key={listing.id} style={{ borderBottom: '1px solid var(--glass-border)' }}>
                     <td style={{ padding: '14px 24px', fontWeight: 500 }}>{listing.title}</td>
                     <td style={{ padding: '14px 24px' }} className="text-muted">{listing.price.toLocaleString()}đ</td>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Home, Phone, Mail, MapPin } from 'lucide-react';
+import { Phone, Mail, MapPin } from 'lucide-react';
+import logo from '../../assets/img/logo.png';
 
 const Facebook = ({ size = 24, className }) => (
   <svg
@@ -40,7 +41,7 @@ const Instagram = ({ size = 24, className }) => (
 
 const Footer = () => {
   return (
-    <footer id="footer-contact" style={{ background: 'var(--dark-bg)', color: 'var(--dark-text)', paddingTop: 'clamp(40px, 10vw, 80px)', paddingBottom: 'clamp(24px, 6vw, 40px)' }}>
+    <footer id="footer-contact" aria-label="Liên hệ" style={{ background: 'var(--dark-bg)', color: 'var(--dark-text)', paddingTop: 'clamp(40px, 10vw, 80px)', paddingBottom: 'clamp(24px, 6vw, 40px)' }}>
       <div className="container">
         {/* CTA Section */}
         <div className="glass-card flex-col items-center justify-center animate-fade-in-up" style={{ padding: 'clamp(24px, 6vw, 48px)', background: 'linear-gradient(135deg, var(--primary), var(--accent))', color: 'white', borderRadius: '32px', marginBottom: '80px', textAlign: 'center' }}>
@@ -57,24 +58,23 @@ const Footer = () => {
         {/* Footer Links */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '48px', marginBottom: '48px' }}>
           <div>
-            <Link to="/" className="flex items-center gap-2 mb-6">
-              <Home className="text-primary" size={32} />
-              <span className="heading-3 text-gradient">HOMIE.VN</span>
+            <Link to="/" className="flex items-center mb-6">
+              <img src={logo} alt="HOMIE.VN" style={{ height: 52, width: 'auto' }} />
             </Link>
             <p className="text-muted mb-6" style={{ color: 'rgba(255,255,255,0.6)' }}>Nền tảng công nghệ kết nối Chủ Trọ và Sinh Viên nhanh chóng, an toàn và minh bạch số 1 Việt Nam.</p>
             <div className="flex gap-4">
-              <a href="#" className="text-muted" style={{ color: 'rgba(255,255,255,0.6)' }}><Facebook size={24}/></a>
-              <a href="#" className="text-muted" style={{ color: 'rgba(255,255,255,0.6)' }}><Instagram size={24}/></a>
+              <button type="button" aria-label="Facebook" className="text-muted" style={{ color: 'rgba(255,255,255,0.6)', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}><Facebook size={24}/></button>
+              <button type="button" aria-label="Instagram" className="text-muted" style={{ color: 'rgba(255,255,255,0.6)', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}><Instagram size={24}/></button>
             </div>
           </div>
 
           <div>
             <h4 className="heading-3 mb-6" style={{ fontSize: '1.25rem' }}>Dịch Vụ</h4>
             <ul className="flex-col gap-4" style={{ listStyle: 'none', padding: 0 }}>
-              <li><a href="#" style={{ color: 'rgba(255,255,255,0.6)' }}>Dành cho Sinh Viên</a></li>
-              <li><a href="#" style={{ color: 'rgba(255,255,255,0.6)' }}>Dành cho Chủ Trọ</a></li>
-              <li><a href="#" style={{ color: 'rgba(255,255,255,0.6)' }}>Bảng giá dịch vụ</a></li>
-              <li><a href="#" style={{ color: 'rgba(255,255,255,0.6)' }}>Tìm bạn ở ghép</a></li>
+              <li><Link to="/search" style={{ color: 'rgba(255,255,255,0.6)' }}>Dành cho Sinh Viên</Link></li>
+              <li><Link to="/landlord" style={{ color: 'rgba(255,255,255,0.6)' }}>Dành cho Chủ Trọ</Link></li>
+              <li><a href="#pricing" style={{ color: 'rgba(255,255,255,0.6)' }}>Bảng giá dịch vụ</a></li>
+              <li><Link to="/student/roommate-finder" style={{ color: 'rgba(255,255,255,0.6)' }}>Tìm bạn ở ghép</Link></li>
             </ul>
           </div>
 
@@ -95,7 +95,7 @@ const Footer = () => {
         </div>
 
         <div style={{ textAlign: 'center', paddingTop: '24px', borderTop: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.4)', fontSize: '0.875rem' }}>
-          © {new Date().getFullYear()} HOMIE.VN. All rights reserved.
+          <span suppressHydrationWarning>{new Date().getFullYear()}</span> HOMIE.VN. All rights reserved.
         </div>
       </div>
     </footer>

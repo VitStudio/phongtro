@@ -1,14 +1,68 @@
-import React, { useState } from 'react';
-import { useAuth } from '../../context/AuthContext';
-import { useToast } from '../../context/ToastContext';
+import React, { useReducer, useState } from 'react';
+import { useAuth } from '../../context/useAuth';
+import { useToast } from '../../context/useToast';
 import { useNavigate } from 'react-router-dom';
 import {
-  User, Mail, Phone, Wallet, Crown, Calendar,
+  User, Mail, Phone, Wallet, Crown,
   Save, Shuffle, CheckCircle, Clock, ArrowRight,
   Shield
 } from 'lucide-react';
 import { VIP_MONTHLY_PRICE, VIP_ANNUAL_PRICE, VIP_MONTHLY_DAYS, VIP_ANNUAL_DAYS } from '../../data/mockData';
 import GlassModal from '../../components/ui/GlassModal';
+
+const f = (n) => (Number(n) || 0).toLocaleString('vi-VN');
+
+const initialVipPurchaseState = {
+  showBuyModal: false,
+  buyPlan: 'monthly',
+  buySuccess: false
+};
+
+const vipPurchaseReducer = (state, action) => {
+  switch (action.type) {
+    case 'open':
+      return { showBuyModal: true, buyPlan: action.plan, buySuccess: false };
+    case 'setPlan':
+      return { ...state, buyPlan: action.plan };
+    case 'purchaseSuccess':
+      return { ...state, buySuccess: true };
+    case 'close':
+      return { ...state, showBuyModal: false, buySuccess: false };
+    default:
+      return state;
+  }
+};
+
+const RecentTransactions = ({ transactions, onViewAll }) => (
+  <div className="glass" style={{ padding: 'clamp(20px, 5vw, 32px)' }}>
+    <div className="flex justify-between items-center mb-4">
+      <h3 className="heading-3">Giao Dịch Gần Đây</h3>
+      <button type="button" className="btn btn-outline" style={{ padding: '6px 14px', fontSize: '0.85rem' }} onClick={onViewAll}>
+        Xem tất cả
+      </button>
+    </div>
+    {transactions.length > 0 ? (
+      <div className="flex-col gap-3">
+        {transactions.map(txn => (
+          <div key={txn.id} className="transaction-row">
+            <div>
+              <div style={{ fontWeight: 500, fontSize: '0.9rem' }}>{txn.description || 'Giao dịch'}</div>
+              <div className="text-muted" style={{ fontSize: '0.8rem' }}>{new Date(txn.created_at).toLocaleDateString('vi-VN')}</div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span style={{ fontWeight: 700, color: txn.amount > 0 ? 'var(--success)' : 'var(--danger)', fontSize: '0.9rem' }}>
+                {txn.amount > 0 ? '+' : '-'}{f(Math.abs(txn.amount))}₫
+              </span>
+              {txn.status === 'completed' ? <CheckCircle size={14} className="text-success" /> : <Clock size={14} className="text-warning" />}
+            </div>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <div className="text-muted" style={{ textAlign: 'center', padding: '20px' }}>Chưa có giao dịch nào.</div>
+    )}
+  </div>
+);
 
 const ProfilePage = () => {
   const { currentUser, updateUserProfile, buySubscription, addTransaction, transactions } = useAuth();
@@ -22,9 +76,8 @@ const ProfilePage = () => {
     phone: currentUser?.phone || '',
     avatarSeed: (currentUser?.avatar || '').split('seed=')[1] || 'User'
   });
-  const [showBuyModal, setShowBuyModal] = useState(false);
-  const [buyPlan, setBuyPlan] = useState('monthly');
-  const [buySuccess, setBuySuccess] = useState(false);
+  const [vipPurchaseState, dispatchVipPurchase] = useReducer(vipPurchaseReducer, initialVipPurchaseState);
+  const { showBuyModal, buyPlan, buySuccess } = vipPurchaseState;
 
   const sub = currentUser?.subscription;
   const isVip = sub?.status === 'active';
@@ -71,18 +124,15 @@ const ProfilePage = () => {
         status: 'completed',
         description: `Mua gói VIP ${buyPlan === 'annual' ? 'Năm' : 'Tháng'}`
       });
-      setBuySuccess(true);
+      dispatchVipPurchase({ type: 'purchaseSuccess' });
       setTimeout(() => {
-        setShowBuyModal(false);
-        setBuySuccess(false);
+        dispatchVipPurchase({ type: 'close' });
       }, 2000);
       toast.success(`🎉 Kích hoạt gói VIP ${buyPlan === 'annual' ? 'Năm' : 'Tháng'} thành công!`);
     } else {
       toast.error('Số dư không đủ. Vui lòng nạp thêm tiền!');
     }
   };
-
-  const f = (n) => (Number(n) || 0).toLocaleString('vi-VN');
 
   return (
     <div style={{ maxWidth: '820px', margin: '0 auto 64px auto' }} className="flex-col gap-8 mt-4">
@@ -100,22 +150,25 @@ const ProfilePage = () => {
                 style={{ width: 120, height: 120, borderRadius: '50%', border: `4px solid ${isVip ? 'var(--warning)' : 'var(--primary)'}`, objectFit: 'cover' }}
               />
               {isVip && (
-                <div style={{ position: 'absolute', bottom: 0, right: 0, background: 'var(--warning)', borderRadius: '50%', width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid white' }}>
+                <div className="profile-vip-avatar-badge">
                   <Crown size={16} color="white" />
                 </div>
               )}
             </div>
             {editing && (
               <div className="flex gap-2 justify-center mt-3">
+                <label htmlFor="avatar-seed" style={{ display: 'none' }}>Avatar seed</label>
                 <input
+                  id="avatar-seed"
                   className="input-field"
                   value={form.avatarSeed}
                   onChange={e => setForm(prev => ({ ...prev, avatarSeed: e.target.value }))}
                   style={{ width: 100, padding: '6px 10px', fontSize: '0.8rem', textAlign: 'center' }}
                   placeholder="seed"
+                  aria-label="Avatar seed"
                 />
-                <button onClick={handleRandomAvatar} className="btn btn-outline" style={{ padding: '6px 10px' }} title="Random">
-                  <Shuffle size={16} />
+                <button type="button" onClick={handleRandomAvatar} className="btn btn-outline" style={{ padding: '6px 10px' }} aria-label="Random avatar" title="Random">
+                  <Shuffle size={16} aria-hidden="true" />
                 </button>
               </div>
             )}
@@ -126,22 +179,22 @@ const ProfilePage = () => {
             {editing ? (
               <div className="flex-col gap-4">
                 <div className="input-group">
-                  <label className="input-label">Họ tên</label>
-                  <input className="input-field" value={form.name} onChange={e => setForm(prev => ({ ...prev, name: e.target.value }))} />
+                  <label className="input-label" htmlFor="profile-name">Họ tên</label>
+                  <input id="profile-name" className="input-field" value={form.name} onChange={e => setForm(prev => ({ ...prev, name: e.target.value }))} />
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }} className="grid-2col-responsive">
                   <div className="input-group">
-                    <label className="input-label">Email</label>
-                    <input className="input-field" value={form.email} onChange={e => setForm(prev => ({ ...prev, email: e.target.value }))} />
+                    <label className="input-label" htmlFor="profile-email">Email</label>
+                    <input id="profile-email" className="input-field" value={form.email} onChange={e => setForm(prev => ({ ...prev, email: e.target.value }))} />
                   </div>
                   <div className="input-group">
-                    <label className="input-label">Số điện thoại</label>
-                    <input className="input-field" value={form.phone} onChange={e => setForm(prev => ({ ...prev, phone: e.target.value }))} />
+                    <label className="input-label" htmlFor="profile-phone">Số điện thoại</label>
+                    <input id="profile-phone" className="input-field" value={form.phone} onChange={e => setForm(prev => ({ ...prev, phone: e.target.value }))} />
                   </div>
                 </div>
                 <div className="flex gap-3 mt-2">
-                  <button className="btn btn-primary" onClick={handleSave}><Save size={16} /> Lưu</button>
-                  <button className="btn btn-outline" onClick={() => setEditing(false)}>Hủy</button>
+                  <button type="button" className="btn btn-primary" onClick={handleSave}><Save size={16} /> Lưu</button>
+                  <button type="button" className="btn btn-outline" onClick={() => setEditing(false)}>Hủy</button>
                 </div>
               </div>
             ) : (
@@ -157,7 +210,7 @@ const ProfilePage = () => {
                   <div className="flex items-center gap-2"><Mail size={16} /> {currentUser?.email}</div>
                   <div className="flex items-center gap-2"><Phone size={16} /> {currentUser?.phone}</div>
                 </div>
-                <button className="btn btn-outline" style={{ alignSelf: 'flex-start', padding: '8px 18px' }} onClick={() => setEditing(true)}>
+                <button type="button" className="btn btn-outline" style={{ alignSelf: 'flex-start', padding: '8px 18px' }} onClick={() => setEditing(true)}>
                   <User size={16} /> Chỉnh sửa thông tin
                 </button>
               </div>
@@ -182,7 +235,7 @@ const ProfilePage = () => {
                 </div>
               </div>
             </div>
-            <button className="btn btn-primary" onClick={() => { setBuyPlan('monthly'); setBuySuccess(false); setShowBuyModal(true); }}>
+            <button type="button" className="btn btn-primary" onClick={() => dispatchVipPurchase({ type: 'open', plan: 'monthly' })}>
               <Crown size={16} /> Gia hạn VIP
             </button>
           </div>
@@ -199,7 +252,7 @@ const ProfilePage = () => {
                 </div>
               </div>
             </div>
-            <button className="btn btn-primary" onClick={() => { setBuyPlan('monthly'); setBuySuccess(false); setShowBuyModal(true); }}>
+            <button type="button" className="btn btn-primary" onClick={() => dispatchVipPurchase({ type: 'open', plan: 'monthly' })}>
               <Crown size={16} /> Nâng cấp VIP
             </button>
           </div>
@@ -218,47 +271,19 @@ const ProfilePage = () => {
               <div className="heading-2">{f(currentUser?.wallet_balance)}₫</div>
             </div>
           </div>
-          <button className="btn btn-outline" onClick={() => navigate('/wallet')}>
+          <button type="button" className="btn btn-outline" onClick={() => navigate('/wallet')}>
             <Wallet size={16} /> Quản lý ví <ArrowRight size={16} />
           </button>
         </div>
       </div>
 
-      {/* Recent Transactions */}
-      <div className="glass" style={{ padding: 'clamp(20px, 5vw, 32px)' }}>
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="heading-3">Giao Dịch Gần Đây</h3>
-          <button className="btn btn-outline" style={{ padding: '6px 14px', fontSize: '0.85rem' }} onClick={() => navigate('/wallet')}>
-            Xem tất cả
-          </button>
-        </div>
-        {myTxns.length > 0 ? (
-          <div className="flex-col gap-3">
-            {myTxns.map(txn => (
-              <div key={txn.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: '1px solid var(--glass-border)' }}>
-                <div>
-                  <div style={{ fontWeight: 500, fontSize: '0.9rem' }}>{txn.description || 'Giao dịch'}</div>
-                  <div className="text-muted" style={{ fontSize: '0.8rem' }}>{new Date(txn.created_at).toLocaleDateString('vi-VN')}</div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span style={{ fontWeight: 700, color: txn.amount > 0 ? 'var(--success)' : 'var(--danger)', fontSize: '0.9rem' }}>
-                    {txn.amount > 0 ? '+' : '-'}{f(Math.abs(txn.amount))}₫
-                  </span>
-                  {txn.status === 'completed' ? <CheckCircle size={14} className="text-success" /> : <Clock size={14} className="text-warning" />}
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-muted" style={{ textAlign: 'center', padding: '20px' }}>Chưa có giao dịch nào.</div>
-        )}
-      </div>
+      <RecentTransactions transactions={myTxns} onViewAll={() => navigate('/wallet')} />
 
       {/* ── Buy VIP Modal ── */}
-      <GlassModal isOpen={showBuyModal} onClose={() => { if (!buySuccess) setShowBuyModal(false); }} title="Mua Gói VIP">
+      <GlassModal isOpen={showBuyModal} onClose={() => { if (!buySuccess) dispatchVipPurchase({ type: 'close' }); }} title="Mua Gói VIP">
         {buySuccess ? (
           <div className="flex-col gap-4" style={{ textAlign: 'center', padding: '20px' }}>
-            <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'rgba(16,185,129,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto' }}>
+            <div className="modal-success-icon">
               <CheckCircle size={44} className="text-success" />
             </div>
             <h3 className="heading-3">Kích hoạt thành công! 🎉</h3>
@@ -269,30 +294,32 @@ const ProfilePage = () => {
             <p className="text-muted" style={{ fontSize: '0.9rem' }}>Chọn gói phù hợp với nhu cầu của bạn.</p>
 
             {/* Plan selector */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-              <div
-                onClick={() => setBuyPlan('monthly')}
+            <div className="vip-plan-grid">
+              <button
+                type="button"
+                aria-pressed={buyPlan === 'monthly'}
+                onClick={() => dispatchVipPurchase({ type: 'setPlan', plan: 'monthly' })}
+                className="vip-plan-option"
                 style={{
-                  padding: '20px', borderRadius: '14px', cursor: 'pointer', textAlign: 'center',
                   border: buyPlan === 'monthly' ? '2px solid var(--primary)' : '1px solid var(--glass-border)',
-                  background: buyPlan === 'monthly' ? 'rgba(99,102,241,0.04)' : 'white',
-                  transition: 'all 0.2s'
+                  background: buyPlan === 'monthly' ? 'rgba(99,102,241,0.04)' : 'white'
                 }}
               >
                 <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '4px' }}>Gói Tháng</div>
                 <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--primary)' }}>{f(VIP_MONTHLY_PRICE)}₫</div>
                 <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{VIP_MONTHLY_DAYS} ngày</div>
-              </div>
-              <div
-                onClick={() => setBuyPlan('annual')}
+              </button>
+              <button
+                type="button"
+                aria-pressed={buyPlan === 'annual'}
+                onClick={() => dispatchVipPurchase({ type: 'setPlan', plan: 'annual' })}
+                className="vip-plan-option vip-plan-option-annual"
                 style={{
-                  padding: '20px', borderRadius: '14px', cursor: 'pointer', textAlign: 'center', position: 'relative',
                   border: buyPlan === 'annual' ? '2px solid var(--warning)' : '1px solid var(--glass-border)',
-                  background: buyPlan === 'annual' ? 'rgba(245,158,11,0.04)' : 'white',
-                  transition: 'all 0.2s'
+                  background: buyPlan === 'annual' ? 'rgba(245,158,11,0.04)' : 'white'
                 }}
               >
-                <span className="badge badge-vip" style={{ position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)', fontSize: '0.7rem' }}>
+                <span className="badge badge-vip" style={{ position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)', fontSize: '0.75rem' }}>
                   -20%
                 </span>
                 <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '4px' }}>Gói Năm</div>
@@ -300,7 +327,7 @@ const ProfilePage = () => {
                   {f(VIP_ANNUAL_PRICE)}₫
                 </div>
                 <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{VIP_ANNUAL_DAYS} ngày</div>
-              </div>
+              </button>
             </div>
 
             {/* Wallet + Confirm */}
@@ -310,15 +337,15 @@ const ProfilePage = () => {
             </div>
 
             {(currentUser?.wallet_balance || 0) < (buyPlan === 'annual' ? VIP_ANNUAL_PRICE : VIP_MONTHLY_PRICE) && (
-              <div style={{ padding: '12px 16px', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '12px', color: 'var(--danger)', fontSize: '0.85rem', fontWeight: 500, textAlign: 'center' }}>
+              <div className="insufficient-funds-box">
                 ⚠️ Số dư không đủ.{' '}
-                <button onClick={() => { setShowBuyModal(false); navigate('/wallet'); }} style={{ color: 'var(--primary)', fontWeight: 700, textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer' }}>
+                <button type="button" onClick={() => { dispatchVipPurchase({ type: 'close' }); navigate('/wallet'); }} style={{ color: 'var(--primary)', fontWeight: 700, textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer' }}>
                   Nạp tiền ngay
                 </button>
               </div>
             )}
 
-            <button
+            <button type="button"
               className="btn btn-primary w-full justify-center"
               onClick={handleBuySubscription}
               disabled={(currentUser?.wallet_balance || 0) < (buyPlan === 'annual' ? VIP_ANNUAL_PRICE : VIP_MONTHLY_PRICE)}

@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Maximize, Clock } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/useAuth';
 
 const ListingCard = ({ listing }) => {
   const { users } = useAuth();
@@ -21,6 +21,12 @@ const ListingCard = ({ listing }) => {
           alt={listing.title} 
           style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
         />
+        {listing.images?.length > 1 && (
+          <div className="img-count-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            {listing.images.length} ảnh
+          </div>
+        )}
         {isVip && (
           <div style={{ position: 'absolute', top: 12, right: 12 }} className="badge badge-vip">
             VIP

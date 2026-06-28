@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import { Wallet, LogOut, LayoutDashboard, Home, CheckSquare, Menu, X, PlusCircle, User, Crown } from 'lucide-react';
+import { useAuth } from '../../context/useAuth';
+import { Wallet, LogOut, LayoutDashboard, CheckSquare, Menu, X, PlusCircle, Crown } from 'lucide-react';
+import logo from '../../assets/img/logo.png';
 
 const Navbar = () => {
   const { currentUser, login, logout, users } = useAuth();
@@ -21,73 +22,70 @@ const Navbar = () => {
   const handleNav = () => setMobileOpen(false);
 
   return (
-    <nav className="glass" style={{ position: 'sticky', top: 0, zIndex: 50, padding: '14px 0', marginBottom: '32px' }}>
-      <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
+    <nav className="glass navbar-app">
+      <div className="container nav-container-row">
         {/* Logo */}
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none', flexShrink: 0 }}>
-          <Home size={26} style={{ color: 'var(--primary)' }} />
-          <span style={{ fontSize: '1.25rem', fontWeight: 800, background: 'linear-gradient(to right, var(--primary), var(--secondary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-            PhongTroGenZ
-          </span>
+        <Link to="/" className="nav-logo-link">
+          <img src={logo} alt="PhongTroGenZ" className="nav-logo-img" />
         </Link>
 
         {!displayUser ? (
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            <button className="btn btn-outline" style={{ padding: '8px 14px', fontSize: '0.85rem' }} onClick={() => login('u1')}>
+          <div className="nav-login-row">
+            <button type="button" className="btn btn-outline nav-login-btn" onClick={() => login('u1')}>
               👨‍🎓 Student
             </button>
-            <button className="btn btn-outline" style={{ padding: '8px 14px', fontSize: '0.85rem' }} onClick={() => login('u2')}>
+            <button type="button" className="btn btn-outline nav-login-btn" onClick={() => login('u2')}>
               🏠 Landlord
             </button>
-            <button className="btn btn-outline" style={{ padding: '8px 14px', fontSize: '0.85rem' }} onClick={() => login('u3')}>
+            <button type="button" className="btn btn-outline nav-login-btn" onClick={() => login('u3')}>
               🛡️ Admin
             </button>
           </div>
         ) : (
           <>
             {/* Desktop nav */}
-            <div className="nav-desktop-only" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
-                <Link to="/search" style={{ fontWeight: 500, fontSize: '0.9rem', color: 'var(--text-muted)', textDecoration: 'none' }}>Tìm Phòng</Link>
-                <Link to="/roommates" style={{ fontWeight: 500, fontSize: '0.9rem', color: 'var(--text-muted)', textDecoration: 'none' }}>Ở Ghép</Link>
-                <Link to="/wallet" style={{ display: 'flex', alignItems: 'center', gap: '5px', fontWeight: 500, fontSize: '0.9rem', color: 'var(--text-muted)', textDecoration: 'none' }}>
+            <div className="nav-desktop-only">
+              <div className="nav-link-row">
+                <Link to="/search" className="nav-app-link">Tìm Phòng</Link>
+                <Link to="/roommates" className="nav-app-link">Ở Ghép</Link>
+                <Link to="/wallet" className="nav-app-link-icon">
                   <PlusCircle size={14} /> Nạp Tiền
                 </Link>
                 {displayUser.role === 'landlord' && (
-                  <Link to="/landlord" style={{ display: 'flex', alignItems: 'center', gap: '5px', fontWeight: 500, fontSize: '0.9rem', color: 'var(--text-muted)', textDecoration: 'none' }}>
+                  <Link to="/landlord" className="nav-app-link-icon">
                     <LayoutDashboard size={16} /> Dashboard
                   </Link>
                 )}
                 {displayUser.role === 'admin' && (
-                  <Link to="/admin" style={{ display: 'flex', alignItems: 'center', gap: '5px', fontWeight: 500, fontSize: '0.9rem', color: 'var(--text-muted)', textDecoration: 'none' }}>
+                  <Link to="/admin" className="nav-app-link-icon">
                     <CheckSquare size={16} /> Duyệt Tin
                   </Link>
                 )}
               </div>
-              <div style={{ width: '1px', height: '20px', background: 'var(--glass-border)' }} />
-              <Link to="/wallet" style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '5px 10px', borderRadius: '9999px', background: 'rgba(16,185,129,0.1)', color: 'var(--success)', fontSize: '0.8rem', fontWeight: 700, textDecoration: 'none', transition: 'all 0.2s' }}>
+              <div className="nav-divider" />
+              <Link to="/wallet" className="wallet-badge-link">
                 <Wallet size={14} />
                 <span>{displayUser.wallet_balance.toLocaleString()}đ</span>
               </Link>
-              <Link to="/profile" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
-                <div style={{ position: 'relative' }}>
-                  <img src={displayUser.avatar} alt="avatar" style={{ width: 32, height: 32, borderRadius: '50%', border: '2px solid var(--primary)', flexShrink: 0 }} />
+              <Link to="/profile" className="nav-profile-link">
+                <div className="avatar-wrap">
+                  <img src={displayUser.avatar} alt="avatar" className="nav-avatar" />
                   {displayUser.subscription?.status === 'active' && (
-                    <div style={{ position: 'absolute', bottom: -2, right: -2, width: 14, height: 14, background: 'var(--warning)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1.5px solid white' }}>
+                    <div className="nav-crown-dot">
                       <Crown size={8} color="white" />
                     </div>
                   )}
                 </div>
-                <span style={{ fontWeight: 600, fontSize: '0.875rem', color: 'var(--text-main)' }}>{displayUser.name}</span>
+                <span className="nav-user-name">{displayUser.name}</span>
               </Link>
-              <button onClick={handleLogout} title="Đăng xuất" style={{ display: 'flex', alignItems: 'center', padding: '6px', color: 'var(--danger)', borderRadius: '8px', transition: 'background 0.2s' }} onMouseOver={e => e.currentTarget.style.background = 'rgba(239,68,68,0.08)'} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>
-                <LogOut size={18} />
+              <button type="button" onClick={handleLogout} aria-label="Đăng xuất" title="Đăng xuất" className="nav-logout-btn">
+                <LogOut size={18} aria-hidden="true" />
               </button>
             </div>
 
             {/* Mobile hamburger */}
-            <button className="nav-mobile-only" onClick={() => setMobileOpen(!mobileOpen)} style={{ display: 'none', padding: '8px', color: 'var(--text-main)' }}>
-              {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+            <button type="button" className="nav-mobile-only" onClick={() => setMobileOpen(!mobileOpen)} aria-label={mobileOpen ? 'Đóng menu' : 'Mở menu'} aria-expanded={mobileOpen}>
+              {mobileOpen ? <X size={24} aria-hidden="true" /> : <Menu size={24} aria-hidden="true" />}
             </button>
           </>
         )}
@@ -95,38 +93,29 @@ const Navbar = () => {
 
       {/* Mobile dropdown menu */}
       {mobileOpen && displayUser && (
-        <div className="glass" style={{ position: 'absolute', top: '100%', left: 0, right: 0, padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px', background: 'rgba(255,255,255,0.95)', borderTop: 'none', zIndex: 51 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 0', borderBottom: '1px solid var(--glass-border)', marginBottom: '8px' }}>
-            <img src={displayUser.avatar} alt="avatar" style={{ width: 40, height: 40, borderRadius: '50%', border: '2px solid var(--primary)' }} />
+        <div className="glass nav-mobile-menu">
+          <div className="user-row-mobile">
+            <img src={displayUser.avatar} alt="avatar" className="nav-mobile-avatar" />
             <div>
-              <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{displayUser.name}</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--success)', fontSize: '0.8rem', fontWeight: 700 }}>
+              <div className="nav-mobile-name">{displayUser.name}</div>
+              <div className="nav-mobile-balance">
                 <Wallet size={12} /> {displayUser.wallet_balance.toLocaleString()}đ
               </div>
             </div>
           </div>
-          <Link to="/search" onClick={handleNav} style={{ fontWeight: 500, fontSize: '0.95rem', color: 'var(--text-main)', padding: '8px 0' }}>🏠 Tìm Phòng</Link>
-          <Link to="/roommates" onClick={handleNav} style={{ fontWeight: 500, fontSize: '0.95rem', color: 'var(--text-main)', padding: '8px 0' }}>👥 Ở Ghép</Link>
-          <Link to="/wallet" onClick={handleNav} style={{ fontWeight: 500, fontSize: '0.95rem', color: 'var(--text-main)', padding: '8px 0' }}>💰 Nạp Tiền</Link>
-          <Link to="/profile" onClick={handleNav} style={{ fontWeight: 500, fontSize: '0.95rem', color: 'var(--text-main)', padding: '8px 0' }}>👤 Cá Nhân</Link>
+          <Link to="/search" onClick={handleNav} className="nav-mobile-link">🏠 Tìm Phòng</Link>
+          <Link to="/roommates" onClick={handleNav} className="nav-mobile-link">👥 Ở Ghép</Link>
+          <Link to="/wallet" onClick={handleNav} className="nav-mobile-link">💰 Nạp Tiền</Link>
+          <Link to="/profile" onClick={handleNav} className="nav-mobile-link">👤 Cá Nhân</Link>
           {displayUser.role === 'landlord' && (
-            <Link to="/landlord" onClick={handleNav} style={{ fontWeight: 500, fontSize: '0.95rem', color: 'var(--text-main)', padding: '8px 0' }}>📊 Dashboard</Link>
+            <Link to="/landlord" onClick={handleNav} className="nav-mobile-link">📊 Dashboard</Link>
           )}
           {displayUser.role === 'admin' && (
-            <Link to="/admin" onClick={handleNav} style={{ fontWeight: 500, fontSize: '0.95rem', color: 'var(--text-main)', padding: '8px 0' }}>✅ Duyệt Tin</Link>
+            <Link to="/admin" onClick={handleNav} className="nav-mobile-link">✅ Duyệt Tin</Link>
           )}
-          <button onClick={handleLogout} style={{ fontWeight: 500, fontSize: '0.95rem', color: 'var(--danger)', padding: '8px 0', textAlign: 'left' }}>🚪 Đăng xuất</button>
+          <button type="button" onClick={handleLogout} className="nav-mobile-logout">🚪 Đăng xuất</button>
         </div>
       )}
-
-      <style>{`
-        @media (min-width: 769px) {
-          .nav-mobile-only { display: none !important; }
-        }
-        @media (max-width: 768px) {
-          .nav-mobile-only { display: block !important; }
-        }
-      `}</style>
     </nav>
   );
 };

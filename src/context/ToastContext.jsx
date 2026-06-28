@@ -1,9 +1,6 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { CheckCircle, XCircle, AlertCircle, X } from 'lucide-react';
-
-const ToastContext = createContext();
-
-export const useToast = () => useContext(ToastContext);
+import { ToastContext } from './useToast';
 
 export const ToastProvider = ({ children }) => {
   const [toasts, setToasts] = useState([]);
@@ -18,17 +15,18 @@ export const ToastProvider = ({ children }) => {
     }, 3000);
   }, []);
 
-  const removeToast = (id) => {
+  const removeToast = useCallback((id) => {
     setToasts(prev => prev.filter(t => t.id !== id));
-  };
+  }, []);
 
-  const success = (msg) => addToast(msg, 'success');
-  const error = (msg) => addToast(msg, 'error');
-  const warning = (msg) => addToast(msg, 'warning');
-  const info = (msg) => addToast(msg, 'info');
+  const success = useCallback((msg) => addToast(msg, 'success'), [addToast]);
+  const error = useCallback((msg) => addToast(msg, 'error'), [addToast]);
+  const warning = useCallback((msg) => addToast(msg, 'warning'), [addToast]);
+  const info = useCallback((msg) => addToast(msg, 'info'), [addToast]);
+  const toastContextValue = useMemo(() => ({ success, error, warning, info }), [success, error, warning, info]);
 
   return (
-    <ToastContext.Provider value={{ success, error, warning, info }}>
+    <ToastContext.Provider value={toastContextValue}>
       {children}
       
       {/* Toast Container */}
@@ -44,14 +42,13 @@ export const ToastProvider = ({ children }) => {
         {toasts.map(toast => {
           let Icon = AlertCircle;
           let color = 'var(--text-main)';
-          let bg = 'white';
           
           if (toast.type === 'success') { Icon = CheckCircle; color = 'var(--success)'; }
           if (toast.type === 'error') { Icon = XCircle; color = 'var(--danger)'; }
           if (toast.type === 'warning') { Icon = AlertCircle; color = 'var(--warning)'; }
 
           return (
-            <div key={toast.id} className="glass-card animate-fade-in-up" style={{
+            <div key={toast.id} role="alert" className="glass-card animate-fade-in-up" style={{
               display: 'flex',
               alignItems: 'center',
               gap: '12px',
@@ -59,10 +56,10 @@ export const ToastProvider = ({ children }) => {
               minWidth: '300px',
               borderLeft: `4px solid ${color}`
             }}>
-              <Icon color={color} size={24} />
+              <Icon color={color} size={24} aria-hidden="true" />
               <div style={{ flex: 1, fontWeight: 500 }}>{toast.message}</div>
-              <button onClick={() => removeToast(toast.id)} style={{ color: 'var(--text-muted)' }}>
-                <X size={20} />
+              <button type="button" onClick={() => removeToast(toast.id)} aria-label="Đóng thông báo" style={{ color: 'var(--text-muted)', padding: 4, borderRadius: 8 }}>
+                <X size={20} aria-hidden="true" />
               </button>
             </div>
           );
