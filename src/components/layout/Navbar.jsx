@@ -85,7 +85,7 @@ const Navbar = () => {
             </div>
 
             {/* Mobile hamburger */}
-            <button type="button" className="nav-mobile-only" onClick={() => setMobileOpen(!mobileOpen)} aria-label={mobileOpen ? 'Đóng menu' : 'Mở menu'} aria-expanded={mobileOpen}>
+            <button type="button" className="nav-mobile-only nav-app-mobile-toggle" onClick={() => setMobileOpen(!mobileOpen)} aria-label={mobileOpen ? 'Đóng menu' : 'Mở menu'} aria-expanded={mobileOpen}>
               {mobileOpen ? <X size={24} aria-hidden="true" /> : <Menu size={24} aria-hidden="true" />}
             </button>
           </>

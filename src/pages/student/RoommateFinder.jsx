@@ -562,12 +562,6 @@ const SwipeDeck = ({
   onRestartDeck
 }) => (
   <section className="tinder-container">
-    <div className="tinder-header-tabs">
-      <button type="button" className="tinder-tab tinder-tab--active">Dành Cho Bạn</button>
-      <button type="button" className="tinder-tab">Đại Học</button>
-      <button type="button" className="tinder-tab">Mới Nhất</button>
-    </div>
-
     <div className="tinder-card-deck">
       {state.cardIndex < state.cardsList.length ? (
         <CardStack
