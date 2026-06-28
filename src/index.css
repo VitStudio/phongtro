@@ -2851,6 +2851,7 @@ body:has(.roommates-app-container) .navbar-app {
 
 body:has(.roommates-app-container) .navbar-app .nav-app-link,
 body:has(.roommates-app-container) .navbar-app .nav-app-link-icon,
+body:has(.roommates-app-container) .navbar-app .nav-logo-text,
 body:has(.roommates-app-container) .navbar-app .nav-user-name,
 body:has(.roommates-app-container) .navbar-app .nav-logout-btn {
   color: rgba(255, 255, 255, 0.8) !important;
