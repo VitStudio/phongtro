@@ -92,12 +92,12 @@ const RoommateFinder = () => {
             <input name="title" value={formData.title} className="input-field" placeholder="VD: Tìm 1 nữ ở ghép khu vực Làng Đại Học" onChange={handleChange} />
           </div>
           
-          <div className="flex-responsive gap-4">
-            <div className="input-group w-full">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }} className="grid-2col-responsive">
+            <div className="input-group">
               <label className="input-label">Ngân sách (VNĐ/người)</label>
               <input name="budget" value={formData.budget} type="number" className="input-field" placeholder="1500000" onChange={handleChange} />
             </div>
-            <div className="input-group w-full">
+            <div className="input-group">
               <label className="input-label">Khu vực / Quận</label>
               <input name="district" value={formData.district} className="input-field" placeholder="Thủ Đức, Bình Thạnh..." onChange={handleChange} />
             </div>

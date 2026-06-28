@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Check, Crown, LogIn, X as CloseIcon } from 'lucide-react';
+import { Check, Crown, LogIn } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import GlassModal from '../ui/GlassModal';

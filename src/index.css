@@ -312,13 +312,11 @@ input:checked + .slider:before { transform: translateX(26px); }
     border-bottom: 1px solid var(--glass-border);
     padding: 16px 0 !important;
   }
-  .section-subtitle {
   .grid-responsive {
     grid-template-columns: 1fr;
   }
   .grid-2col-responsive {
     grid-template-columns: 1fr !important;
-  }
   }
   .btn {
     padding: 10px 20px;

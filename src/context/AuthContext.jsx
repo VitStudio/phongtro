@@ -197,14 +197,13 @@ export const AuthProvider = ({ children }) => {
     const startFrom = currentExpiry > now ? currentExpiry : now;
     const newExpiry = new Date(startFrom.getTime() + days * 24 * 60 * 60 * 1000);
 
-    // Deduct wallet
+    // Deduct wallet (updateWallet handles both users + currentUser state)
     updateWallet(userId, -price);
 
-    // Set subscription
+    // Set subscription (wallet_balance already updated by updateWallet)
     setUsers(prev => prev.map(u =>
       u.id === userId ? {
         ...u,
-        wallet_balance: u.wallet_balance - price,
         subscription: {
           plan: 'vip',
           status: 'active',
@@ -217,7 +216,6 @@ export const AuthProvider = ({ children }) => {
       if (!prev || prev.id !== userId) return prev;
       return {
         ...prev,
-        wallet_balance: prev.wallet_balance - price,
         subscription: {
           plan: 'vip',
           status: 'active',

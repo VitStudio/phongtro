@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { PlusCircle, TrendingUp, Eye, DollarSign, Calendar, CheckCircle, Clock, Crown } from 'lucide-react';
@@ -9,7 +8,6 @@ import GlassModal from '../../components/ui/GlassModal';
 const Dashboard = () => {
   const { listings, currentUser, appointments, updateAppointmentStatus, updateWallet, addTransaction } = useAuth();
   const toast = useToast();
-  const navigate = useNavigate();
 
   const sub = currentUser?.subscription;
   const isVip = sub?.status === 'active';
