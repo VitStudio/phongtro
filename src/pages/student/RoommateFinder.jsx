@@ -1,4 +1,5 @@
 import React, { useReducer, useRef, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/useAuth';
 import { useToast } from '../../context/useToast';
 import { createInitialState, roommateReducer, getSwipeLabel, getSwipeTarget, parseInterests } from './roommate-finder/reducer';
@@ -15,6 +16,7 @@ import ads4 from '../../assets/ads/ads4.jpg';
 const ADS = [ads1, ads2, ads3, ads4];
 
 const RoommateFinder = () => {
+  const navigate = useNavigate();
   const { currentUser } = useAuth();
   const toast = useToast();
   const [state, dispatch] = useReducer(roommateReducer, currentUser, createInitialState);
@@ -271,6 +273,7 @@ const RoommateFinder = () => {
           onChat={() => {
             dispatch({ type: 'closeMatchModal' });
             toast.success(`📨 Đã kết nối hộp thoại chat với ${state.matchedProfile.name}!`);
+            navigate(`/chat?contactId=${state.matchedProfile.id}`);
           }}
           onKeepSwiping={() => dispatch({ type: 'closeMatchModal' })}
         />

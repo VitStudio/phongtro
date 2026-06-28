@@ -162,13 +162,20 @@ const ListingDetail = () => {
         </div>
 
         <div>
-          <div className="glass sticky-booking-card">
-            <h3 className="heading-3 mb-4 text-center">Đặt lịch xem phòng</h3>
-            <p className="text-muted text-center mb-6 booking-helper">
+          <div className="glass sticky-booking-card" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <h3 className="heading-3 mb-2 text-center">Đặt lịch xem phòng</h3>
+            <p className="text-muted text-center mb-4 booking-helper">
               Cọc giữ chỗ 200k. Hoàn cọc 100% sau khi xem phòng dù bạn có thuê hay không. Chống boom hàng!
             </p>
             <button type="button" className="btn btn-primary w-full justify-center" onClick={() => setIsModalOpen(true)}>
               Đặt lịch & Cọc 200k
+            </button>
+            <button 
+              type="button" 
+              className="btn btn-outline w-full justify-center"
+              onClick={() => navigate(`/chat?contactId=${listing.landlord_id || 'u2'}`)}
+            >
+              Nhắn tin với Chủ trọ
             </button>
           </div>
         </div>

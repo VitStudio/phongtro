@@ -15,6 +15,7 @@ const Profile        = lazy(() => import('./pages/student/Profile'));
 const Dashboard      = lazy(() => import('./pages/landlord/Dashboard'));
 const CreateListing  = lazy(() => import('./pages/landlord/CreateListing'));
 const Approval       = lazy(() => import('./pages/admin/Approval'));
+const Chat           = lazy(() => import('./pages/student/Chat'));
 
 // ─── Fallback spinner ────────────────────────────────────────────────────────
 const PageSpinner = () => (
@@ -55,6 +56,11 @@ function App() {
               <Routes>
                 {/* Roommates page - renders full-width outside the container */}
                 <Route path="/roommates" element={<RoommateFinder />} />
+                <Route path="/chat" element={
+                  <ProtectedRoute allowedRoles={['student', 'landlord', 'admin']}>
+                    <Chat />
+                  </ProtectedRoute>
+                } />
 
                 {/* All other app pages - render inside standard container */}
                 <Route path="*" element={

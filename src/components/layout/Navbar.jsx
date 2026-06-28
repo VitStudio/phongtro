@@ -49,6 +49,7 @@ const Navbar = () => {
               <div className="nav-link-row">
                 <Link to="/search" className="nav-app-link">Tìm Phòng</Link>
                 <Link to="/roommates" className="nav-app-link">Roommate</Link>
+                <Link to="/chat" className="nav-app-link">Tin Nhắn</Link>
                 <Link to="/wallet" className="nav-app-link-icon">
                   <PlusCircle size={14} /> Nạp Tiền
                 </Link>
@@ -106,6 +107,7 @@ const Navbar = () => {
           </div>
           <Link to="/search" onClick={handleNav} className="nav-mobile-link">🏠 Tìm Phòng</Link>
           <Link to="/roommates" onClick={handleNav} className="nav-mobile-link">👥 Roommate</Link>
+          <Link to="/chat" onClick={handleNav} className="nav-mobile-link">💬 Tin Nhắn</Link>
           <Link to="/wallet" onClick={handleNav} className="nav-mobile-link">💰 Nạp Tiền</Link>
           <Link to="/profile" onClick={handleNav} className="nav-mobile-link">👤 Cá Nhân</Link>
           {displayUser.role === 'landlord' && (
