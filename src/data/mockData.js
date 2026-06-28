@@ -7,7 +7,7 @@ export const VIP_ANNUAL_DAYS = 365;
 
 import { listingImages } from './listingImages';
 
-export const DATA_VERSION = 'v3';
+export const DATA_VERSION = 'v4';
 
 const now = new Date();
 const thirtyDaysFromNow = new Date(now.getTime() + VIP_MONTHLY_DAYS * 24 * 60 * 60 * 1000).toISOString();
