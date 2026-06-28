@@ -1,24 +1,48 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
+import Fuse from 'fuse.js';
 import { useAuth } from '../../context/useAuth';
 import ListingCard from '../../components/ui/ListingCard';
 import { Search, Filter } from 'lucide-react';
+
+const listingFuseOptions = {
+  threshold: 0.38,
+  ignoreLocation: true,
+  keys: [
+    { name: 'title', weight: 0.45 },
+    { name: 'address', weight: 0.35 },
+    { name: 'description', weight: 0.15 },
+    { name: 'area', weight: 0.05 }
+  ]
+};
 
 const Home = () => {
   const { listings } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [priceFilter, setPriceFilter] = useState('');
 
-  const approvedListings = listings.filter(l => l.status === 'approved');
+  const approvedListings = useMemo(
+    () => listings.filter(l => l.status === 'approved'),
+    [listings]
+  );
+
+  const listingSearch = useMemo(
+    () => new Fuse(approvedListings, listingFuseOptions),
+    [approvedListings]
+  );
+
+  const searchableListings = useMemo(() => {
+    const query = searchTerm.trim();
+    if (!query) return approvedListings;
+    return listingSearch.search(query).map(result => result.item);
+  }, [approvedListings, listingSearch, searchTerm]);
   
-  const filteredListings = approvedListings.filter(l => {
-    const matchSearch = l.title.toLowerCase().includes(searchTerm.toLowerCase()) || l.address.toLowerCase().includes(searchTerm.toLowerCase());
-    
+  const filteredListings = searchableListings.filter(l => {
     let matchPrice = true;
     if (priceFilter === 'under2') matchPrice = l.price < 2000000;
     if (priceFilter === '2to4') matchPrice = l.price >= 2000000 && l.price <= 4000000;
     if (priceFilter === 'above4') matchPrice = l.price > 4000000;
     
-    return matchSearch && matchPrice;
+    return matchPrice;
   });
 
   return (

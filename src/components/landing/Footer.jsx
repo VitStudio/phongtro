@@ -59,7 +59,7 @@ const Footer = () => {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '48px', marginBottom: '48px' }}>
           <div>
             <Link to="/" className="flex items-center mb-6">
-              <img src={logo} alt="HOMIE.VN" style={{ height: 52, width: 'auto' }} />
+              <img src={logo} alt="HOMIE.VN" style={{ height: 52, width: 'auto' }} /> <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'white' }}>Homie</span>
             </Link>
             <p className="text-muted mb-6" style={{ color: 'rgba(255,255,255,0.6)' }}>Nền tảng công nghệ kết nối Chủ Trọ và Sinh Viên nhanh chóng, an toàn và minh bạch số 1 Việt Nam.</p>
             <div className="flex gap-4">
