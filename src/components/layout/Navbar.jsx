@@ -33,10 +33,10 @@ const Navbar = () => {
         {!displayUser ? (
           <div className="nav-login-row">
             <button type="button" className="btn btn-outline nav-login-btn" onClick={() => login('u1')}>
-              👨‍🎓 Student
+              👨‍🎓 Sinh viên
             </button>
             <button type="button" className="btn btn-outline nav-login-btn" onClick={() => login('u2')}>
-              🏠 Landlord
+              🏠 Chủ Trọ
             </button>
             <button type="button" className="btn btn-outline nav-login-btn" onClick={() => login('u3')}>
               🛡️ Admin

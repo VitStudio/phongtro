@@ -3,7 +3,6 @@ import { useAuth } from '../../context/useAuth';
 import { useToast } from '../../context/useToast';
 import { createInitialState, roommateReducer, getSwipeLabel, getSwipeTarget, parseInterests } from './roommate-finder/reducer';
 import RoommateSidebar from './roommate-finder/RoommateSidebar';
-import MobileHeader from './roommate-finder/MobileHeader';
 import SwipeDeck from './roommate-finder/SwipeDeck';
 import SwipeControls from './roommate-finder/SwipeControls';
 import CreatePostModal from './roommate-finder/CreatePostModal';
@@ -20,6 +19,7 @@ const RoommateFinder = () => {
   const toast = useToast();
   const [state, dispatch] = useReducer(roommateReducer, currentUser, createInitialState);
   const dragStart = useRef({ x: 0, y: 0, time: 0 });
+  const swipeLayoutRef = useRef(null);
 
   const [leftAdIndex, setLeftAdIndex] = useState(0);
   const [rightAdIndex, setRightAdIndex] = useState(2);
@@ -30,6 +30,13 @@ const RoommateFinder = () => {
       setRightAdIndex((prev) => (prev + 1) % ADS.length);
     }, 4000);
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      swipeLayoutRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 350);
+    return () => clearTimeout(timer);
   }, []);
 
   const activeProfile = state.cardsList[state.cardIndex];
@@ -211,11 +218,10 @@ const RoommateFinder = () => {
 
   return (
     <div className="roommates-app-container">
-      <RoommateSidebar currentUser={currentUser} onOpenModal={openModal} />
       <main className="roommates-main-content">
-        <MobileHeader onOpenModal={openModal} />
+        <RoommateSidebar onOpenModal={openModal} />
 
-        <div className="roommates-swipe-layout">
+        <div ref={swipeLayoutRef} className="roommates-swipe-layout">
           <aside className="roommates-side-ad roommates-side-ad--left" aria-label="Quảng cáo tài trợ">
             <div className="roommates-side-ad-badge">QUẢNG CÁO</div>
             <img src={ADS[leftAdIndex]} alt="Quảng cáo tài trợ" key={`left-ad-${leftAdIndex}`} className="roommates-ad-image anim-fade" />

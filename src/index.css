@@ -3212,10 +3212,10 @@ body:has(.roommates-app-container) .navbar-app .nav-app-link.active {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   position: relative;
   overflow-y: auto;
-  padding: 24px;
+  padding: 105px 0 40px 0;
 }
 
 /* Grid view container within dashboard layout */
@@ -3250,7 +3250,7 @@ body:has(.roommates-app-container) .navbar-app .nav-app-link.active {
   
   .roommates-main-content {
     justify-content: flex-start;
-    padding: 20px 12px;
+    padding: 175px 12px 20px 12px;
   }
   
   .roommates-app-container {
@@ -3268,11 +3268,11 @@ body:has(.roommates-app-container) .navbar-app .nav-app-link.active {
 .roommates-swipe-layout {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: clamp(16px, 3vw, 40px);
+  justify-content: space-between;
   width: 100%;
-  max-width: 1160px;
+  max-width: 100%;
   margin: 0 auto;
+  padding: 0 48px;
   position: relative;
 }
 
@@ -3286,7 +3286,7 @@ body:has(.roommates-app-container) .navbar-app .nav-app-link.active {
 
 .roommates-side-ad {
   position: relative;
-  width: 180px;
+  width: 240px;
   flex-shrink: 0;
   border-radius: 16px;
   overflow: hidden;
@@ -3341,5 +3341,96 @@ body:has(.roommates-app-container) .navbar-app .nav-app-link.active {
   .roommates-swipe-layout {
     width: auto;
     max-width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ─── Roommates Top Header Row (Capsule styling) ─── */
+.roommates-header-row {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 24px;
+  background: transparent;
+  backdrop-filter: none;
+  border: none;
+  box-shadow: none;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.roommates-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.roommates-page-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: white;
+  margin: 0;
+}
+
+.roommates-page-subtitle {
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+  width: 100%;
+}
+
+.roommates-capsule-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background: rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  color: white;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.roommates-header-btn {
+  padding: 10px 20px;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .roommates-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .roommates-header-left {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .roommates-header-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Bigger sidebar ads for wider/compatible screens */
+@media (min-width: 1200px) {
+  .roommates-side-ad {
+    width: 280px;
+  }
+}
+
+@media (min-width: 1500px) {
+  .roommates-side-ad {
+    width: 320px;
   }
 }
