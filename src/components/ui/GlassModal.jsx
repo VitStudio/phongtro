@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useCallback } from 'react';
 import { X } from 'lucide-react';
 
-const GlassModal = ({ isOpen, onClose, title, children }) => {
+const GlassModal = ({ isOpen, onClose, title, children, dark }) => {
   const triggerRef = useRef(null);
   const dialogRef = useRef(null);
   const contentRef = useRef(null);
@@ -45,7 +45,7 @@ const GlassModal = ({ isOpen, onClose, title, children }) => {
       <div
         ref={contentRef}
         tabIndex={-1}
-        className="glass modal-content-box"
+        className={`glass modal-content-box${dark ? ' modal-dark' : ''}`}
       >
         <button type="button"
           onClick={handleClose}

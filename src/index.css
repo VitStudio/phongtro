@@ -819,6 +819,47 @@ input:checked + .slider:before { transform: translateX(26px); }
   outline: none;
 }
 
+/* Dark variant for modals on dark-themed pages (e.g. Roommate Finder) */
+.modal-dark.modal-content-box {
+  background: #161b2e !important;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+  color: #f1f5f9;
+}
+
+.modal-dark .heading-2 {
+  color: #f1f5f9;
+}
+
+.modal-dark .input-label {
+  color: #94a3b8;
+}
+
+.modal-dark .input-field {
+  background: #0d1117 !important;
+  border: 1px solid rgba(99, 102, 241, 0.2) !important;
+  color: #f1f5f9 !important;
+}
+
+.modal-dark .input-field::placeholder {
+  color: #475569 !important;
+}
+
+.modal-dark .input-field:focus {
+  border-color: rgba(99, 102, 241, 0.5) !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+}
+
+.modal-dark select.input-field {
+  background: #0d1117 !important;
+  color: #f1f5f9 !important;
+}
+
+.modal-dark select.input-field option {
+  background: #1e293b;
+  color: #f1f5f9;
+}
+
 .img-count-badge {
   position: absolute;
   bottom: 12px;

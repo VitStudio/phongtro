@@ -2,7 +2,7 @@ import React from 'react';
 import GlassModal from '../../../components/ui/GlassModal';
 
 const CreatePostModal = ({ isOpen, formData, onClose, onChange, onPost }) => (
-  <GlassModal isOpen={isOpen} onClose={onClose} title="Đăng tin tìm ở ghép">
+  <GlassModal isOpen={isOpen} onClose={onClose} title="Đăng tin tìm ở ghép" dark>
     <div className="flex-col gap-4">
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '12px' }} className="grid-3col-responsive">
         <div className="input-group">
@@ -15,7 +15,7 @@ const CreatePostModal = ({ isOpen, formData, onClose, onChange, onPost }) => (
         </div>
         <div className="input-group">
           <label className="input-label" htmlFor="rm-gender">Giới tính</label>
-          <select id="rm-gender" name="gender" value={formData.gender} className="input-field" onChange={onChange} style={{ height: '42px', background: 'var(--bg-color)', color: 'var(--text-main)', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '10px', padding: '0 12px' }}>
+          <select id="rm-gender" name="gender" value={formData.gender} className="input-field" onChange={onChange}>
             <option value="male">Nam</option>
             <option value="female">Nữ</option>
             <option value="other">Khác</option>
