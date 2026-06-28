@@ -1,4 +1,4 @@
-import React, { useReducer, useRef } from 'react';
+import React, { useReducer, useRef, useState, useEffect } from 'react';
 import { useAuth } from '../../context/useAuth';
 import { useToast } from '../../context/useToast';
 import { createInitialState, roommateReducer, getSwipeLabel, getSwipeTarget, parseInterests } from './roommate-finder/reducer';
@@ -8,12 +8,29 @@ import SwipeDeck from './roommate-finder/SwipeDeck';
 import SwipeControls from './roommate-finder/SwipeControls';
 import CreatePostModal from './roommate-finder/CreatePostModal';
 import MatchOverlay from './roommate-finder/MatchOverlay';
+import ads1 from '../../assets/ads/ads1.jpg';
+import ads2 from '../../assets/ads/ads2.jpg';
+import ads3 from '../../assets/ads/ads3.jpg';
+import ads4 from '../../assets/ads/ads4.jpg';
+
+const ADS = [ads1, ads2, ads3, ads4];
 
 const RoommateFinder = () => {
   const { currentUser } = useAuth();
   const toast = useToast();
   const [state, dispatch] = useReducer(roommateReducer, currentUser, createInitialState);
   const dragStart = useRef({ x: 0, y: 0, time: 0 });
+
+  const [leftAdIndex, setLeftAdIndex] = useState(0);
+  const [rightAdIndex, setRightAdIndex] = useState(2);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLeftAdIndex((prev) => (prev + 1) % ADS.length);
+      setRightAdIndex((prev) => (prev + 1) % ADS.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   const activeProfile = state.cardsList[state.cardIndex];
 
@@ -197,25 +214,40 @@ const RoommateFinder = () => {
       <RoommateSidebar currentUser={currentUser} onOpenModal={openModal} />
       <main className="roommates-main-content">
         <MobileHeader onOpenModal={openModal} />
-        <SwipeDeck
-          state={state}
-          currentUser={currentUser}
-          getCardStyle={getCardStyle}
-          getStampOpacity={getStampOpacity}
-          onDragStart={handleDragStart}
-          onDragMove={handleDragMove}
-          onDragEnd={handleDragEnd}
-          onCardKeyDown={handleCardKeyDown}
-          onToggleBio={() => dispatch({ type: 'toggleBio' })}
-          onRestartDeck={() => dispatch({ type: 'restartDeck' })}
-        />
-        <SwipeControls
-          canRewind={state.history.length > 0}
-          isDisabled={state.cardIndex >= state.cardsList.length || state.isAnimating}
-          onRewind={handleRewind}
-          onSwipe={executeSwipe}
-          onBoost={handleBoost}
-        />
+
+        <div className="roommates-swipe-layout">
+          <aside className="roommates-side-ad roommates-side-ad--left" aria-label="Quảng cáo tài trợ">
+            <div className="roommates-side-ad-badge">QUẢNG CÁO</div>
+            <img src={ADS[leftAdIndex]} alt="Quảng cáo tài trợ" key={`left-ad-${leftAdIndex}`} className="roommates-ad-image anim-fade" />
+          </aside>
+
+          <div className="roommates-swipe-center">
+            <SwipeDeck
+              state={state}
+              currentUser={currentUser}
+              getCardStyle={getCardStyle}
+              getStampOpacity={getStampOpacity}
+              onDragStart={handleDragStart}
+              onDragMove={handleDragMove}
+              onDragEnd={handleDragEnd}
+              onCardKeyDown={handleCardKeyDown}
+              onToggleBio={() => dispatch({ type: 'toggleBio' })}
+              onRestartDeck={() => dispatch({ type: 'restartDeck' })}
+            />
+            <SwipeControls
+              canRewind={state.history.length > 0}
+              isDisabled={state.cardIndex >= state.cardsList.length || state.isAnimating}
+              onRewind={handleRewind}
+              onSwipe={executeSwipe}
+              onBoost={handleBoost}
+            />
+          </div>
+
+          <aside className="roommates-side-ad roommates-side-ad--right" aria-label="Quảng cáo tài trợ">
+            <div className="roommates-side-ad-badge">QUẢNG CÁO</div>
+            <img src={ADS[rightAdIndex]} alt="Quảng cáo tài trợ" key={`right-ad-${rightAdIndex}`} className="roommates-ad-image anim-fade" />
+          </aside>
+        </div>
       </main>
 
       <CreatePostModal

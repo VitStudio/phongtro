@@ -1,8 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { animate, stagger } from 'animejs';
 import { ImagePlus, Rocket, ShieldCheck, UserPlus } from 'lucide-react';
-import ads1 from '../../assets/ads/ads1.jpg';
-import ads2 from '../../assets/ads/ads2.jpg';
 
 const STEPS = [
   {
@@ -59,16 +57,7 @@ const ProcessSection = () => {
         ease: 'outBack(1.3)'
       });
 
-      const adAnimation = animate(section.querySelectorAll('.process-ad'), {
-        opacity: [0, 1],
-        translateY: [28, 0],
-        scale: [0.94, 1],
-        duration: 860,
-        delay: stagger(140, { start: 360 }),
-        ease: 'outCubic'
-      });
-
-      animations.push(headlineAnimation, stepAnimation, adAnimation);
+      animations.push(headlineAnimation, stepAnimation);
       observer.disconnect();
     }, { threshold: 0.28 });
 
@@ -89,31 +78,21 @@ const ProcessSection = () => {
           <p>Một phòng trống không tự tìm được người thuê. Homie biến nó thành một hành trình rõ ràng: đăng nhanh, duyệt thật, rồi gặp đúng sinh viên cần phòng.</p>
         </div>
 
-        <div className="process-ad-layout">
-          <aside className="process-ad process-ad--left" aria-label="Quảng cáo dịch vụ chuyển nhà Ahamove">
-            <img src={ads1} alt="Ahamove - Dịch vụ chuyển nhà" loading="lazy" />
-          </aside>
-
-          <div className="process-steps">
-            {/* Vertical connecting line */}
-            <div className="desktop-only" style={{ position: 'absolute', left: 'clamp(30px, 5vw, 40px)', top: 0, bottom: 0, width: 2, background: 'linear-gradient(to bottom, var(--primary), var(--accent), transparent)', opacity: 0.3 }}></div>
-            {STEPS.map((step) => (
-              <div key={step.title} className="glass step-card process-step-card" style={{ padding: 'clamp(16px, 3vw, 24px)' }}>
-                <div className="step-icon-box">
-                  {step.icon}
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <h3 className="heading-3 mb-1">{step.title}</h3>
-                  <p className="text-muted" style={{ fontSize: '0.9rem' }}>{step.desc}</p>
-                  <p className="process-step-story">{step.story}</p>
-                </div>
+        <div className="process-steps" style={{ maxWidth: '700px', margin: '0 auto', position: 'relative' }}>
+          {/* Vertical connecting line */}
+          <div className="desktop-only" style={{ position: 'absolute', left: 'clamp(30px, 5vw, 40px)', top: 0, bottom: 0, width: 2, background: 'linear-gradient(to bottom, var(--primary), var(--accent), transparent)', opacity: 0.3 }}></div>
+          {STEPS.map((step) => (
+            <div key={step.title} className="glass step-card process-step-card" style={{ padding: 'clamp(16px, 3vw, 24px)' }}>
+              <div className="step-icon-box">
+                {step.icon}
               </div>
-            ))}
-          </div>
-
-          <aside className="process-ad process-ad--right" aria-label="Quảng cáo nội thất phòng trọ">
-            <img src={ads2} alt="Nội thất Tân Á - Combo nội thất phòng trọ" loading="lazy" />
-          </aside>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <h3 className="heading-3 mb-1">{step.title}</h3>
+                <p className="text-muted" style={{ fontSize: '0.9rem' }}>{step.desc}</p>
+                <p className="process-step-story">{step.story}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

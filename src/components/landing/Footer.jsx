@@ -74,7 +74,7 @@ const Footer = () => {
               <li><Link to="/search" style={{ color: 'rgba(255,255,255,0.6)' }}>Dành cho Sinh Viên</Link></li>
               <li><Link to="/landlord" style={{ color: 'rgba(255,255,255,0.6)' }}>Dành cho Chủ Trọ</Link></li>
               <li><a href="#pricing" style={{ color: 'rgba(255,255,255,0.6)' }}>Bảng giá dịch vụ</a></li>
-              <li><Link to="/student/roommate-finder" style={{ color: 'rgba(255,255,255,0.6)' }}>Tìm bạn ở ghép</Link></li>
+              <li><Link to="/roommates" style={{ color: 'rgba(255,255,255,0.6)' }}>Tìm bạn Roommate</Link></li>
             </ul>
           </div>
 

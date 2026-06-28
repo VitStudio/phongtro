@@ -1587,11 +1587,115 @@ input:checked + .slider:before { transform: translateX(26px); }
 }
 
 .hero-section-wrap {
-  padding-top: clamp(80px, 20vw, 160px);
+  padding-top: clamp(60px, 12vw, 120px);
   padding-bottom: clamp(40px, 10vw, 100px);
   position: relative;
   overflow: hidden;
   background: linear-gradient(135deg, var(--bg-color), #ebedee);
+}
+
+.hero-ad-layout {
+  display: grid;
+  grid-template-columns: minmax(200px, 280px) minmax(520px, 800px) minmax(200px, 280px);
+  align-items: flex-start;
+  justify-content: center;
+  gap: clamp(16px, 2vw, 32px);
+  width: min(calc(100vw - 48px), 1400px);
+  margin: 0 auto;
+  position: relative;
+  z-index: 5;
+}
+
+.hero-ad {
+  position: sticky;
+  top: 90px;
+  width: 100%;
+}
+
+.hero-ad img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 16px;
+  box-shadow: 0 15px 35px rgba(15, 23, 42, 0.08);
+  background: #fff;
+  border: 1px solid var(--glass-border);
+}
+
+.home-ads-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin: 32px 0;
+  width: 100%;
+}
+
+.home-ad-card {
+  position: relative;
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  background-color: #ffffff;
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.home-ad-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 35px rgba(15, 23, 42, 0.08);
+}
+
+.home-ad-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background-color: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(4px);
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+  z-index: 10;
+}
+
+.home-ad-image {
+  display: block;
+  width: 100%;
+  height: 120px;
+  object-fit: contain;
+  background-color: #ffffff;
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+.home-ad-image.anim-fade {
+  animation: adFadeIn 0.5s ease-in-out;
+}
+
+@media (max-width: 768px) {
+  .home-ads-row {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .home-ad-image {
+    height: 90px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .hero-ad-layout {
+    grid-template-columns: 1fr;
+    width: 100%;
+    max-width: 800px;
+  }
+  .hero-ad {
+    display: none;
+  }
 }
 
 /* Hero content sits above background blobs */
@@ -3007,12 +3111,12 @@ body:has(.roommates-app-container) .navbar-app .nav-app-link.active {
 
 /* Left Sidebar panel */
 .roommates-sidebar {
-  width: 320px;
+  width: 270px;
   background-color: #0f172a;
   border-right: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   flex-direction: column;
-  padding: 28px 24px;
+  padding: 28px 18px;
   justify-content: space-between;
   height: 100%;
   flex-shrink: 0;
@@ -3158,4 +3262,84 @@ body:has(.roommates-app-container) .navbar-app .nav-app-link.active {
     padding: 0;
   }
 
+}
+
+/* ─── Roommates Swipe Layout (Ads flanking Tinder card deck) ─── */
+.roommates-swipe-layout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(16px, 3vw, 40px);
+  width: 100%;
+  max-width: 1160px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.roommates-swipe-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.roommates-side-ad {
+  position: relative;
+  width: 180px;
+  flex-shrink: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4);
+  background-color: #0d1527;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.roommates-side-ad-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background-color: rgba(99, 102, 241, 0.85);
+  color: white;
+  font-size: 0.6rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 3px;
+  letter-spacing: 0.05em;
+  z-index: 10;
+}
+
+.roommates-ad-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+.roommates-ad-image.anim-fade {
+  animation: adFadeIn 0.5s ease-in-out;
+}
+
+@keyframes adFadeIn {
+  from {
+    opacity: 0.3;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 990px) {
+  .roommates-side-ad {
+    display: none;
+  }
+  .roommates-swipe-layout {
+    width: auto;
+    max-width: 100%;
+  }
 }

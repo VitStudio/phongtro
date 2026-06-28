@@ -1,6 +1,6 @@
 import { INITIAL_CARDS } from './constants';
 
-export const createDefaultFormData = (currentUser) => ({
+const createDefaultFormData = (currentUser) => ({
   name: currentUser?.name || '',
   age: '20',
   gender: 'female',

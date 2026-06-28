@@ -1,10 +1,9 @@
 // Data version — bump this to force-reset stored IndexedDB data on next load
 // ─── Price Constants ───────────────────────────────
-export const VIP_MONTHLY_PRICE = 99000;
-export const VIP_ANNUAL_PRICE = 950000;
+export const VIP_MONTHLY_PRICE = 149000;
+export const VIP_ANNUAL_PRICE = 1500000;
 export const VIP_MONTHLY_DAYS = 30;
 export const VIP_ANNUAL_DAYS = 365;
-export const BASIC_LISTING_PRICE = 20000;
 
 import { listingImages } from './listingImages';
 
@@ -18,7 +17,7 @@ export const mockUsers = [
     id: 'u1',
     role: 'student',
     name: 'Nguyễn Văn Sinh Viên',
-    email: 'sinhvien@hcmut.edu.vn',
+    email: 'sinhvien@st.uel.edu.vn',
     phone: '0901234567',
     wallet_balance: 500000,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=SinhVien',

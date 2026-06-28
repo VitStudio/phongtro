@@ -5,7 +5,7 @@ const FEATURES = [
   { icon: <UploadCloud size={32}/>, title: "Đăng Tin Dễ Dàng", desc: "Quản lý phòng trọ, tải ảnh sắc nét và theo dõi lượt xem chi tiết dành cho chủ nhà." },
   { icon: <Filter size={32}/>, title: "Bộ Lọc Thông Minh", desc: "Sinh viên dễ dàng tìm phòng theo giá cả, diện tích, tiện ích và vị trí bản đồ số." },
   { icon: <CalendarCheck size={32}/>, title: "Đặt Lịch Xem Phòng", desc: "Cọc 200k an toàn trên hệ thống. Tránh boom hàng, đảm bảo uy tín hai bên." },
-  { icon: <Users size={32}/>, title: "Tìm Bạn Ở Ghép", desc: "Công cụ kết nối miễn phí giúp sinh viên tự tìm roommate phù hợp lối sống." },
+  { icon: <Users size={32}/>, title: "Tìm Bạn Roommate", desc: "Công cụ kết nối miễn phí giúp sinh viên tự tìm roommate phù hợp lối sống." },
   { icon: <Shield size={32}/>, title: "Kiểm Duyệt Khắt Khe", desc: "Gắn huy hiệu 'Chủ trọ uy tín' & 'Phòng đã xác thực' để loại bỏ 100% tin rác." },
   { icon: <CreditCard size={32}/>, title: "Thanh Toán Nhanh", desc: "Tích hợp ví điện tử, nạp tiền tự động mua các gói đẩy tin VIP." }
 ];

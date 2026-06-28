@@ -1,8 +1,14 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import Fuse from 'fuse.js';
 import { useAuth } from '../../context/useAuth';
 import ListingCard from '../../components/ui/ListingCard';
 import { Search, Filter } from 'lucide-react';
+import ads1 from '../../assets/ads/ads1.jpg';
+import ads2 from '../../assets/ads/ads2.jpg';
+import ads3 from '../../assets/ads/ads3.jpg';
+import ads4 from '../../assets/ads/ads4.jpg';
+
+const ADS = [ads1, ads2, ads3, ads4];
 
 const listingFuseOptions = {
   threshold: 0.38,
@@ -19,6 +25,17 @@ const Home = () => {
   const { listings } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [priceFilter, setPriceFilter] = useState('');
+
+  const [leftAdIndex, setLeftAdIndex] = useState(2); // Start with ads3
+  const [rightAdIndex, setRightAdIndex] = useState(3); // Start with ads4
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLeftAdIndex((prev) => (prev + 1) % ADS.length);
+      setRightAdIndex((prev) => (prev + 1) % ADS.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   const approvedListings = useMemo(
     () => listings.filter(l => l.status === 'approved'),
@@ -70,6 +87,30 @@ const Home = () => {
             />
             <button type="button" className="btn btn-primary" style={{ marginLeft: 8, padding: '8px 16px', fontSize: '0.9rem', flexShrink: 0 }} aria-label="Tìm kiếm">Tìm</button>
           </div>
+        </div>
+      </div>
+
+      {/* 2 Ads on Same Row */}
+      <div className="home-ads-row">
+        <div className="home-ad-card">
+          <div className="home-ad-badge">TÀI TRỢ</div>
+          <img 
+            src={ADS[leftAdIndex]} 
+            alt="Quảng cáo tài trợ" 
+            key={`left-ad-${leftAdIndex}`}
+            className="home-ad-image anim-fade"
+            loading="lazy" 
+          />
+        </div>
+        <div className="home-ad-card">
+          <div className="home-ad-badge">TÀI TRỢ</div>
+          <img 
+            src={ADS[rightAdIndex]} 
+            alt="Quảng cáo tài trợ" 
+            key={`right-ad-${rightAdIndex}`}
+            className="home-ad-image anim-fade"
+            loading="lazy" 
+          />
         </div>
       </div>
 

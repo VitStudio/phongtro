@@ -7,7 +7,7 @@ const MobileHeader = ({ onOpenModal }) => (
       <div>
         <h1 className="heading-1" style={{ fontSize: '1.75rem', margin: 0, color: 'white' }}>Homate</h1>
         <p className="text-muted mt-1" style={{ fontSize: '0.8rem', margin: 0 }}>
-          tìm ngay "destiny" cho mình nhé
+          Tìm ngay "destiny" cho mình nhé
         </p>
       </div>
       <button

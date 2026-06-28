@@ -7,7 +7,7 @@ import {
   Save, Shuffle, CheckCircle, Clock, ArrowRight,
   Shield
 } from 'lucide-react';
-import { VIP_MONTHLY_PRICE, VIP_ANNUAL_PRICE, VIP_MONTHLY_DAYS, VIP_ANNUAL_DAYS } from '../../data/mockData';
+import { VIP_MONTHLY_PRICE, VIP_ANNUAL_PRICE } from '../../data/mockData';
 import VipPurchaseModal from '../../components/ui/VipPurchaseModal';
 import { formatCurrency } from '../../utils/format';
 

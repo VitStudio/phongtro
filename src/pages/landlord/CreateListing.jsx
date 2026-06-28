@@ -21,7 +21,7 @@ const CreateListing = () => {
     description: ''
   });
 
-  const cost = isVipUser ? 0 : (plan === 'vip' ? 0 : 20000);
+  const cost = isVipUser ? 0 : (plan === 'vip' ? 100000 : 20000);
 
   // Functional update to avoid stale closure on rapid typing
   const handleChange = (e) => {

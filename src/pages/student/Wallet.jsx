@@ -590,7 +590,7 @@ const WalletPage = () => {
             <span className="wallet-balance-label">Số dư khả dụng</span>
           </div>
           <div className="wallet-balance-amount">
-            {f(balance)}<span className="wallet-balance-currency">₫</span>
+            {formatCurrency(balance)}<span className="wallet-balance-currency">₫</span>
           </div>
           <div className="wallet-balance-stats">
             <div className="wallet-balance-stat">

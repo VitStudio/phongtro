@@ -6,9 +6,7 @@ import { useToast } from '../../context/useToast';
 import GlassModal from '../ui/GlassModal';
 import VipPurchaseModal from '../ui/VipPurchaseModal';
 import {
-  VIP_MONTHLY_PRICE, VIP_ANNUAL_PRICE,
-  VIP_MONTHLY_DAYS, VIP_ANNUAL_DAYS,
-  BASIC_LISTING_PRICE
+  VIP_MONTHLY_PRICE, VIP_ANNUAL_PRICE
 } from '../../data/mockData';
 import { formatCurrency } from '../../utils/format';
 
@@ -90,7 +88,6 @@ const PricingSection = () => {
   // ── Derived values ────────────────────────────────────────────────────────
 
   const vipPrice = isAnnual ? VIP_ANNUAL_PRICE : VIP_MONTHLY_PRICE;
-  const vipDaysLabel = isAnnual ? '365' : '30';
   const vipPeriodLabel = isAnnual ? 'năm' : 'tháng';
 
   // ── Render ────────────────────────────────────────────────────────────────
@@ -138,14 +135,15 @@ const PricingSection = () => {
             <p className="text-muted mb-6">
               Mức giá rẻ để lọc tin rác, phù hợp chủ nhà lâu lâu mới trống phòng.
             </p>
-            <div className="heading-1 mb-8">
-              {formatCurrency(BASIC_LISTING_PRICE)}₫{' '}
+            <div className="heading-1 mb-8" style={{ fontSize: '1.75rem' }}>
+              5% giá phòng{' '}
               <span className="pricing-price-unit">/ tin</span>
             </div>
             <ul className="pricing-feat-list flex-col gap-4 mb-8 flex-1">
-              <FeatureItem>Hiển thị sau tin VIP</FeatureItem>
-              <FeatureItem>Tồn tại 30 ngày</FeatureItem>
-              <FeatureItem>Duyệt tin trong 24h</FeatureItem>
+              <FeatureItem>Bài đăng tồn tại trong 15 ngày</FeatureItem>
+              <FeatureItem>100% Xác thực thực địa (On-site)</FeatureItem>
+              <FeatureItem>Gắn nhãn "Đã xác thực"</FeatureItem>
+              <FeatureItem>Tối đa 200.000₫ / tin</FeatureItem>
             </ul>
             <Link to="/landlord/create" className="btn btn-outline w-full justify-center">
               Đăng Ký Ngay
@@ -159,18 +157,16 @@ const PricingSection = () => {
             <p className="text-muted mb-6">
               Tiếp cận tối đa sinh viên. Phù hợp chủ nhà muốn lấp phòng gấp.
             </p>
-            <div className="heading-1 text-gradient mb-8">
+            <div className="heading-1 text-gradient mb-8" style={{ fontSize: '1.75rem' }}>
               {formatCurrency(vipPrice)}₫{' '}
               <span className="pricing-price-unit">/ {vipPeriodLabel}</span>
             </div>
             <ul className="pricing-feat-list flex-col gap-4 mb-8 flex-1">
-              <FeatureItem iconClass="text-primary" bold>Ghim lên đầu trang tìm kiếm</FeatureItem>
-              <FeatureItem iconClass="text-primary" bold>Huy hiệu ĐỐI TÁC VIP</FeatureItem>
+              <FeatureItem iconClass="text-primary" bold>5% giá phòng / tin</FeatureItem>
+              <FeatureItem iconClass="text-primary" bold>Được ghim lên đầu trang tìm kiếm</FeatureItem>
               <FeatureItem iconClass="text-primary">Làm mới tin mỗi 4h</FeatureItem>
-              <FeatureItem iconClass="text-primary">Duyệt tin ưu tiên 1h</FeatureItem>
-              <FeatureItem iconClass="text-primary">
-                Miễn phí đăng tin (VIP) {vipDaysLabel} ngày
-              </FeatureItem>
+              <FeatureItem iconClass="text-primary">100% Xác thực thực địa (On-site)</FeatureItem>
+              <FeatureItem iconClass="text-primary">Tối đa 200.000₫ / tin</FeatureItem>
             </ul>
             <button type="button" className="btn btn-primary w-full justify-center" onClick={handleBuyVip}>
               <Crown size={18} aria-hidden="true" /> Mua Gói VIP
@@ -180,18 +176,9 @@ const PricingSection = () => {
           {/* ── Thuê Bao Chuyên Nghiệp ── */}
           <div className="pricing-card pricing-card--pro">
             <h3 className="heading-3 mb-2">Thuê Bao Chuyên Nghiệp</h3>
-            <p className="text-muted mb-6">
+            <p className="text-muted mb-6 flex-1">
               Dành cho môi giới BĐS, quản lý chuỗi chung cư mini nhiều phòng.
             </p>
-            <div className="heading-1 mb-8">
-              {formatCurrency(vipPrice)}₫{' '}
-              <span className="pricing-price-unit">+ {formatCurrency(BASIC_LISTING_PRICE)}₫/tin</span>
-            </div>
-            <ul className="pricing-feat-list flex-col gap-4 mb-8 flex-1">
-              <FeatureItem>Đăng không giới hạn (+15k/tin)</FeatureItem>
-              <FeatureItem>Dashboard quản lý riêng</FeatureItem>
-              <FeatureItem>Báo cáo lượt xem chi tiết</FeatureItem>
-            </ul>
             <button
               type="button"
               className="btn btn-outline w-full justify-center"
