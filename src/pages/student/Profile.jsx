@@ -1,4 +1,4 @@
-import React, { useReducer, useState } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../context/useAuth';
 import { useToast } from '../../context/useToast';
 import { useNavigate } from 'react-router-dom';
@@ -8,30 +8,8 @@ import {
   Shield
 } from 'lucide-react';
 import { VIP_MONTHLY_PRICE, VIP_ANNUAL_PRICE, VIP_MONTHLY_DAYS, VIP_ANNUAL_DAYS } from '../../data/mockData';
-import GlassModal from '../../components/ui/GlassModal';
-
-const f = (n) => (Number(n) || 0).toLocaleString('vi-VN');
-
-const initialVipPurchaseState = {
-  showBuyModal: false,
-  buyPlan: 'monthly',
-  buySuccess: false
-};
-
-const vipPurchaseReducer = (state, action) => {
-  switch (action.type) {
-    case 'open':
-      return { showBuyModal: true, buyPlan: action.plan, buySuccess: false };
-    case 'setPlan':
-      return { ...state, buyPlan: action.plan };
-    case 'purchaseSuccess':
-      return { ...state, buySuccess: true };
-    case 'close':
-      return { ...state, showBuyModal: false, buySuccess: false };
-    default:
-      return state;
-  }
-};
+import VipPurchaseModal from '../../components/ui/VipPurchaseModal';
+import { formatCurrency } from '../../utils/format';
 
 const RecentTransactions = ({ transactions, onViewAll }) => (
   <div className="glass" style={{ padding: 'clamp(20px, 5vw, 32px)' }}>
@@ -51,7 +29,7 @@ const RecentTransactions = ({ transactions, onViewAll }) => (
             </div>
             <div className="flex items-center gap-2">
               <span style={{ fontWeight: 700, color: txn.amount > 0 ? 'var(--success)' : 'var(--danger)', fontSize: '0.9rem' }}>
-                {txn.amount > 0 ? '+' : '-'}{f(Math.abs(txn.amount))}₫
+                {txn.amount > 0 ? '+' : '-'}{formatCurrency(Math.abs(txn.amount))}₫
               </span>
               {txn.status === 'completed' ? <CheckCircle size={14} className="text-success" /> : <Clock size={14} className="text-warning" />}
             </div>
@@ -76,8 +54,8 @@ const ProfilePage = () => {
     phone: currentUser?.phone || '',
     avatarSeed: (currentUser?.avatar || '').split('seed=')[1] || 'User'
   });
-  const [vipPurchaseState, dispatchVipPurchase] = useReducer(vipPurchaseReducer, initialVipPurchaseState);
-  const { showBuyModal, buyPlan, buySuccess } = vipPurchaseState;
+  const [showBuyModal, setShowBuyModal] = useState(false);
+  const [buySuccess, setBuySuccess] = useState(false);
 
   const sub = currentUser?.subscription;
   const isVip = sub?.status === 'active';
@@ -112,23 +90,24 @@ const ProfilePage = () => {
     setForm(prev => ({ ...prev, avatarSeed: seed }));
   };
 
-  const handleBuySubscription = () => {
-    const success = buySubscription(currentUser.id, buyPlan);
+  const handleBuySubscription = (plan) => {
+    const success = buySubscription(currentUser.id, plan);
     if (success) {
-      const price = buyPlan === 'annual' ? VIP_ANNUAL_PRICE : VIP_MONTHLY_PRICE;
+      const price = plan === 'annual' ? VIP_ANNUAL_PRICE : VIP_MONTHLY_PRICE;
       addTransaction({
         user_id: currentUser.id,
         type: 'deposit',
         amount: -price,
         method: 'vip_subscription',
         status: 'completed',
-        description: `Mua gói VIP ${buyPlan === 'annual' ? 'Năm' : 'Tháng'}`
+        description: `Mua gói VIP ${plan === 'annual' ? 'Năm' : 'Tháng'}`
       });
-      dispatchVipPurchase({ type: 'purchaseSuccess' });
+      setBuySuccess(true);
       setTimeout(() => {
-        dispatchVipPurchase({ type: 'close' });
+        setShowBuyModal(false);
+        setBuySuccess(false);
       }, 2000);
-      toast.success(`🎉 Kích hoạt gói VIP ${buyPlan === 'annual' ? 'Năm' : 'Tháng'} thành công!`);
+      toast.success(`🎉 Kích hoạt gói VIP ${plan === 'annual' ? 'Năm' : 'Tháng'} thành công!`);
     } else {
       toast.error('Số dư không đủ. Vui lòng nạp thêm tiền!');
     }
@@ -234,8 +213,7 @@ const ProfilePage = () => {
                   <Clock size={14} /> Còn <strong style={{ color: daysLeft <= 3 ? 'var(--danger)' : 'var(--success)' }}>{daysLeft} ngày</strong>
                 </div>
               </div>
-            </div>
-            <button type="button" className="btn btn-primary" onClick={() => dispatchVipPurchase({ type: 'open', plan: 'monthly' })}>
+            </div>              <button type="button" className="btn btn-primary" onClick={() => setShowBuyModal(true)}>
               <Crown size={16} /> Gia hạn VIP
             </button>
           </div>
@@ -252,7 +230,7 @@ const ProfilePage = () => {
                 </div>
               </div>
             </div>
-            <button type="button" className="btn btn-primary" onClick={() => dispatchVipPurchase({ type: 'open', plan: 'monthly' })}>
+            <button type="button" className="btn btn-primary" onClick={() => setShowBuyModal(true)}>
               <Crown size={16} /> Nâng cấp VIP
             </button>
           </div>
@@ -268,7 +246,7 @@ const ProfilePage = () => {
             </div>
             <div>
               <div className="text-muted" style={{ fontSize: '0.85rem' }}>Số dư ví</div>
-              <div className="heading-2">{f(currentUser?.wallet_balance)}₫</div>
+              <div className="heading-2">{formatCurrency(currentUser?.wallet_balance)}₫</div>
             </div>
           </div>
           <button type="button" className="btn btn-outline" onClick={() => navigate('/wallet')}>
@@ -279,83 +257,13 @@ const ProfilePage = () => {
 
       <RecentTransactions transactions={myTxns} onViewAll={() => navigate('/wallet')} />
 
-      {/* ── Buy VIP Modal ── */}
-      <GlassModal isOpen={showBuyModal} onClose={() => { if (!buySuccess) dispatchVipPurchase({ type: 'close' }); }} title="Mua Gói VIP">
-        {buySuccess ? (
-          <div className="flex-col gap-4" style={{ textAlign: 'center', padding: '20px' }}>
-            <div className="modal-success-icon">
-              <CheckCircle size={44} className="text-success" />
-            </div>
-            <h3 className="heading-3">Kích hoạt thành công! 🎉</h3>
-            <p className="text-muted">Gói VIP đã được kích hoạt. Tận hưởng các quyền lợi đặc biệt!</p>
-          </div>
-        ) : (
-          <div className="flex-col gap-4">
-            <p className="text-muted" style={{ fontSize: '0.9rem' }}>Chọn gói phù hợp với nhu cầu của bạn.</p>
-
-            {/* Plan selector */}
-            <div className="vip-plan-grid">
-              <button
-                type="button"
-                aria-pressed={buyPlan === 'monthly'}
-                onClick={() => dispatchVipPurchase({ type: 'setPlan', plan: 'monthly' })}
-                className="vip-plan-option"
-                style={{
-                  border: buyPlan === 'monthly' ? '2px solid var(--primary)' : '1px solid var(--glass-border)',
-                  background: buyPlan === 'monthly' ? 'rgba(99,102,241,0.04)' : 'white'
-                }}
-              >
-                <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '4px' }}>Gói Tháng</div>
-                <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--primary)' }}>{f(VIP_MONTHLY_PRICE)}₫</div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{VIP_MONTHLY_DAYS} ngày</div>
-              </button>
-              <button
-                type="button"
-                aria-pressed={buyPlan === 'annual'}
-                onClick={() => dispatchVipPurchase({ type: 'setPlan', plan: 'annual' })}
-                className="vip-plan-option vip-plan-option-annual"
-                style={{
-                  border: buyPlan === 'annual' ? '2px solid var(--warning)' : '1px solid var(--glass-border)',
-                  background: buyPlan === 'annual' ? 'rgba(245,158,11,0.04)' : 'white'
-                }}
-              >
-                <span className="badge badge-vip" style={{ position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)', fontSize: '0.75rem' }}>
-                  -20%
-                </span>
-                <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '4px' }}>Gói Năm</div>
-                <div style={{ fontSize: '1.5rem', fontWeight: 800, background: 'linear-gradient(to right, var(--warning), var(--danger))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                  {f(VIP_ANNUAL_PRICE)}₫
-                </div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{VIP_ANNUAL_DAYS} ngày</div>
-              </button>
-            </div>
-
-            {/* Wallet + Confirm */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '14px 16px', background: 'rgba(16,185,129,0.08)', borderRadius: '12px' }}>
-              <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>Số dư ví:</span>
-              <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>{f(currentUser?.wallet_balance)}₫</span>
-            </div>
-
-            {(currentUser?.wallet_balance || 0) < (buyPlan === 'annual' ? VIP_ANNUAL_PRICE : VIP_MONTHLY_PRICE) && (
-              <div className="insufficient-funds-box">
-                ⚠️ Số dư không đủ.{' '}
-                <button type="button" onClick={() => { dispatchVipPurchase({ type: 'close' }); navigate('/wallet'); }} style={{ color: 'var(--primary)', fontWeight: 700, textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer' }}>
-                  Nạp tiền ngay
-                </button>
-              </div>
-            )}
-
-            <button type="button"
-              className="btn btn-primary w-full justify-center"
-              onClick={handleBuySubscription}
-              disabled={(currentUser?.wallet_balance || 0) < (buyPlan === 'annual' ? VIP_ANNUAL_PRICE : VIP_MONTHLY_PRICE)}
-              style={{ padding: '14px', opacity: (currentUser?.wallet_balance || 0) < (buyPlan === 'annual' ? VIP_ANNUAL_PRICE : VIP_MONTHLY_PRICE) ? 0.5 : 1 }}
-            >
-              <Crown size={18} /> Thanh toán & Kích hoạt VIP
-            </button>
-          </div>
-        )}
-      </GlassModal>
+      <VipPurchaseModal
+        isOpen={showBuyModal}
+        onClose={() => { setShowBuyModal(false); setBuySuccess(false); }}
+        currentUser={currentUser}
+        onConfirm={handleBuySubscription}
+        buySuccess={buySuccess}
+      />
     </div>
   );
 };

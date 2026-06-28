@@ -4,19 +4,18 @@ import { Check, Crown, LogIn } from 'lucide-react';
 import { useAuth } from '../../context/useAuth';
 import { useToast } from '../../context/useToast';
 import GlassModal from '../ui/GlassModal';
+import VipPurchaseModal from '../ui/VipPurchaseModal';
 import {
   VIP_MONTHLY_PRICE, VIP_ANNUAL_PRICE,
   VIP_MONTHLY_DAYS, VIP_ANNUAL_DAYS,
   BASIC_LISTING_PRICE
 } from '../../data/mockData';
-
-const f = (n) => (Number(n) || 0).toLocaleString('vi-VN');
+import { formatCurrency } from '../../utils/format';
 
 // ─── Reducer ────────────────────────────────────────────────────────────────
 
 const initialPurchaseState = {
   showVipModal: false,
-  buyPlan: 'monthly',
   buySuccess: false,
   showLoginPrompt: false,
 };
@@ -24,13 +23,11 @@ const initialPurchaseState = {
 const purchaseReducer = (state, action) => {
   switch (action.type) {
     case 'promptLogin':
-      return { ...state, showVipModal: false, showLoginPrompt: true };
+      return { ...state, showLoginPrompt: true };
     case 'closeLoginPrompt':
       return { ...state, showLoginPrompt: false };
     case 'openVipModal':
-      return { ...state, showVipModal: true, buyPlan: action.plan, buySuccess: false };
-    case 'setPlan':
-      return { ...state, buyPlan: action.plan };
+      return { ...state, showVipModal: true, buySuccess: false };
     case 'purchaseSuccess':
       return { ...state, buySuccess: true };
     case 'closeVipModal':
@@ -54,7 +51,7 @@ const FeatureItem = ({ iconClass = 'text-success', bold = false, children }) => 
 const PricingSection = () => {
   const [isAnnual, setIsAnnual] = useState(false);
   const [purchaseState, dispatchPurchase] = useReducer(purchaseReducer, initialPurchaseState);
-  const { showVipModal, buyPlan, buySuccess, showLoginPrompt } = purchaseState;
+  const { showVipModal, buySuccess, showLoginPrompt } = purchaseState;
 
   const { currentUser, login, buySubscription, addTransaction } = useAuth();
   const toast = useToast();
@@ -70,21 +67,21 @@ const PricingSection = () => {
     dispatchPurchase({ type: 'openVipModal', plan: isAnnual ? 'annual' : 'monthly' });
   };
 
-  const handleConfirmBuy = () => {
-    const success = buySubscription(currentUser.id, buyPlan);
+  const handleConfirmBuy = (plan) => {
+    const success = buySubscription(currentUser.id, plan);
     if (success) {
-      const price = buyPlan === 'annual' ? VIP_ANNUAL_PRICE : VIP_MONTHLY_PRICE;
+      const price = plan === 'annual' ? VIP_ANNUAL_PRICE : VIP_MONTHLY_PRICE;
       addTransaction({
         user_id: currentUser.id,
         type: 'deposit',
         amount: -price,
         method: 'vip_subscription',
         status: 'completed',
-        description: `Mua gói VIP ${buyPlan === 'annual' ? 'Năm' : 'Tháng'} qua Landing`,
+        description: `Mua gói VIP ${plan === 'annual' ? 'Năm' : 'Tháng'} qua Landing`,
       });
       dispatchPurchase({ type: 'purchaseSuccess' });
       setTimeout(() => dispatchPurchase({ type: 'closeVipModal' }), 2000);
-      toast.success(`🎉 Kích hoạt VIP ${buyPlan === 'annual' ? 'Năm' : 'Tháng'} thành công!`);
+      toast.success(`🎉 Kích hoạt VIP ${plan === 'annual' ? 'Năm' : 'Tháng'} thành công!`);
     } else {
       toast.error('Số dư không đủ. Vui lòng nạp thêm tiền!');
     }
@@ -95,9 +92,6 @@ const PricingSection = () => {
   const vipPrice = isAnnual ? VIP_ANNUAL_PRICE : VIP_MONTHLY_PRICE;
   const vipDaysLabel = isAnnual ? '365' : '30';
   const vipPeriodLabel = isAnnual ? 'năm' : 'tháng';
-  const requiredPrice = buyPlan === 'annual' ? VIP_ANNUAL_PRICE : VIP_MONTHLY_PRICE;
-  const walletBalance = currentUser?.wallet_balance || 0;
-  const isInsufficient = walletBalance < requiredPrice;
 
   // ── Render ────────────────────────────────────────────────────────────────
 
@@ -145,7 +139,7 @@ const PricingSection = () => {
               Mức giá rẻ để lọc tin rác, phù hợp chủ nhà lâu lâu mới trống phòng.
             </p>
             <div className="heading-1 mb-8">
-              {f(BASIC_LISTING_PRICE)}₫{' '}
+              {formatCurrency(BASIC_LISTING_PRICE)}₫{' '}
               <span className="pricing-price-unit">/ tin</span>
             </div>
             <ul className="pricing-feat-list flex-col gap-4 mb-8 flex-1">
@@ -166,7 +160,7 @@ const PricingSection = () => {
               Tiếp cận tối đa sinh viên. Phù hợp chủ nhà muốn lấp phòng gấp.
             </p>
             <div className="heading-1 text-gradient mb-8">
-              {f(vipPrice)}₫{' '}
+              {formatCurrency(vipPrice)}₫{' '}
               <span className="pricing-price-unit">/ {vipPeriodLabel}</span>
             </div>
             <ul className="pricing-feat-list flex-col gap-4 mb-8 flex-1">
@@ -190,8 +184,8 @@ const PricingSection = () => {
               Dành cho môi giới BĐS, quản lý chuỗi chung cư mini nhiều phòng.
             </p>
             <div className="heading-1 mb-8">
-              {f(vipPrice)}₫{' '}
-              <span className="pricing-price-unit">+ {f(BASIC_LISTING_PRICE)}₫/tin</span>
+              {formatCurrency(vipPrice)}₫{' '}
+              <span className="pricing-price-unit">+ {formatCurrency(BASIC_LISTING_PRICE)}₫/tin</span>
             </div>
             <ul className="pricing-feat-list flex-col gap-4 mb-8 flex-1">
               <FeatureItem>Đăng không giới hạn (+15k/tin)</FeatureItem>
@@ -242,90 +236,13 @@ const PricingSection = () => {
         </div>
       </GlassModal>
 
-      {/* ── Buy VIP Modal ── */}
-      <GlassModal
+      <VipPurchaseModal
         isOpen={showVipModal}
-        onClose={() => { if (!buySuccess) dispatchPurchase({ type: 'closeVipModal' }); }}
-        title="Mua Gói VIP"
-      >
-        {buySuccess ? (
-          <div className="flex-col gap-4 pricing-login-centered" style={{ padding: '20px' }}>
-            <div className="modal-success-icon">
-              <Check size={44} className="text-success" />
-            </div>
-            <h3 className="heading-3">Kích hoạt thành công! 🎉</h3>
-            <p className="text-muted">Gói VIP đã được kích hoạt. Tận hưởng các quyền lợi đặc biệt!</p>
-          </div>
-        ) : (
-          <div className="flex-col gap-4">
-            <p className="text-muted" style={{ fontSize: '0.9rem' }}>
-              Chọn gói phù hợp với nhu cầu của bạn.
-            </p>
-
-            {/* Plan selector */}
-            <div className="vip-plan-grid" aria-label="Chọn gói VIP">
-              <button
-                type="button"
-                aria-pressed={buyPlan === 'monthly'}
-                onClick={() => dispatchPurchase({ type: 'setPlan', plan: 'monthly' })}
-                className={`vip-plan-option ${buyPlan === 'monthly' ? 'vip-plan-option--monthly' : ''}`}
-                style={buyPlan !== 'monthly' ? { border: '1px solid var(--glass-border)', background: 'white' } : undefined}
-              >
-                <div className="vip-plan-option__label">Gói Tháng</div>
-                <div className="vip-plan-option__price">{f(VIP_MONTHLY_PRICE)}₫</div>
-                <div className="vip-plan-option__days">{VIP_MONTHLY_DAYS} ngày</div>
-              </button>
-
-              <button
-                type="button"
-                aria-pressed={buyPlan === 'annual'}
-                onClick={() => dispatchPurchase({ type: 'setPlan', plan: 'annual' })}
-                className={`vip-plan-option ${buyPlan === 'annual' ? 'vip-plan-option--annual' : ''}`}
-                style={buyPlan !== 'annual' ? { border: '1px solid var(--glass-border)', background: 'white' } : undefined}
-              >
-                <span className="badge badge-vip vip-plan-badge-annual">-20%</span>
-                <div className="vip-plan-option__label">Gói Năm</div>
-                <div className={`vip-plan-option__price ${buyPlan === 'annual' ? 'vip-plan-option__price--annual' : ''}`}>
-                  {f(VIP_ANNUAL_PRICE)}₫
-                </div>
-                <div className="vip-plan-option__days">{VIP_ANNUAL_DAYS} ngày</div>
-              </button>
-            </div>
-
-            {/* Wallet balance */}
-            <div className="vip-wallet-row">
-              <span className="vip-wallet-label">Số dư ví:</span>
-              <span className="vip-wallet-amount">{f(walletBalance)}₫</span>
-            </div>
-
-            {/* Insufficient funds warning */}
-            {isInsufficient && (
-              <div id="insufficient-funds-desc" className="insufficient-funds-box">
-                ⚠️ Số dư không đủ.{' '}
-                <button
-                  type="button"
-                  onClick={() => { dispatchPurchase({ type: 'closeVipModal' }); navigate('/wallet'); }}
-                  style={{ color: 'var(--primary)', fontWeight: 700, textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer' }}
-                >
-                  Nạp tiền ngay
-                </button>
-              </div>
-            )}
-
-            {/* Confirm button */}
-            <button
-              type="button"
-              className="btn btn-primary pricing-modal-confirm"
-              onClick={handleConfirmBuy}
-              disabled={isInsufficient}
-              aria-describedby={isInsufficient ? 'insufficient-funds-desc' : undefined}
-              style={{ opacity: isInsufficient ? 0.5 : 1 }}
-            >
-              <Crown size={18} aria-hidden="true" /> Thanh toán &amp; Kích hoạt VIP
-            </button>
-          </div>
-        )}
-      </GlassModal>
+        onClose={() => dispatchPurchase({ type: 'closeVipModal' })}
+        currentUser={currentUser}
+        onConfirm={handleConfirmBuy}
+        buySuccess={buySuccess}
+      />
     </section>
   );
 };

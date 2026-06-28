@@ -40,8 +40,7 @@ const parseDepositAmount = (value) => {
   return Math.floor(num); // only whole VND
 };
 
-/** Format number to Vietnamese locale */
-const f = (amount) => (Number(amount) || 0).toLocaleString('vi-VN');
+import { formatCurrency } from '../../utils/format';
 
 const formatDate = (dateStr) => {
   const d = new Date(dateStr);
@@ -178,7 +177,7 @@ const TransactionHistory = ({ transactions }) => (
               </td>
               <td className="wallet-td">
                 <span className={`wallet-transaction-amount ${txn.type === 'deposit' ? 'wallet-transaction-in' : 'wallet-transaction-out'}`}>
-                  {txn.type === 'deposit' ? '+' : '-'}{f(txn.amount)}₫
+                  {txn.type === 'deposit' ? '+' : '-'}{formatCurrency(txn.amount)}₫
                 </span>
               </td>
               <td className="wallet-td wallet-td-sm">
@@ -251,7 +250,7 @@ const WalletDepositModal = ({
                 dispatchDeposit({ type: 'select_amount', amount: String(amount) });
               }}
             >
-              {f(amount)}₫
+              {formatCurrency(amount)}₫
             </button>
           ))}
         </div>
@@ -279,7 +278,7 @@ const WalletDepositModal = ({
           <div className="wallet-deposit-summary">
             <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>Số tiền nạp:</span>
             <span style={{ fontWeight: 800, fontSize: '1.1rem', color: 'var(--success)' }}>
-              {f(finalAmount)}₫
+              {formatCurrency(finalAmount)}₫
             </span>
           </div>
         )}
@@ -368,7 +367,7 @@ const WalletDepositModal = ({
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
             <span className="text-muted" style={{ fontSize: '0.85rem' }}>Số tiền:</span>
             <span style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--success)' }}>
-              {f(finalAmount)}₫
+              {formatCurrency(finalAmount)}₫
             </span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -521,11 +520,11 @@ const WalletPage = () => {
   // ── Validate & proceed to QR ──
   const handleContinueToQR = () => {
     if (finalAmount < MIN_DEPOSIT) {
-      toast.warning(`Số tiền nạp tối thiểu là ${MIN_DEPOSIT.toLocaleString('vi-VN')}đ`);
+      toast.warning(`Số tiền nạp tối thiểu là ${formatCurrency(MIN_DEPOSIT)}đ`);
       return;
     }
     if (finalAmount > MAX_DEPOSIT) {
-      toast.warning(`Số tiền nạp tối đa là ${MAX_DEPOSIT.toLocaleString('vi-VN')}đ`);
+      toast.warning(`Số tiền nạp tối đa là ${formatCurrency(MAX_DEPOSIT)}đ`);
       return;
     }
     dispatchDeposit({ type: 'show_qr' });
@@ -564,7 +563,7 @@ const WalletPage = () => {
 
     dispatchDeposit({ type: 'close' });
     resetDepositModal();
-    toast.success(`Nạp thành công ${amount.toLocaleString('vi-VN')}₫ vào Ví!`);
+    toast.success(`Nạp thành công ${formatCurrency(amount)}₫ vào Ví!`);
   }, [finalAmount, currentUser, addTransaction, updateWallet, resetDepositModal, toast]);
 
   // When progress hits 100 → automatically complete
@@ -595,13 +594,13 @@ const WalletPage = () => {
           </div>
           <div className="wallet-balance-stats">
             <div className="wallet-balance-stat">
-              <Banknote size={16} /> Đã nạp: {f(
+              <Banknote size={16} /> Đã nạp: {formatCurrency(
                 myTransactions.filter(t => t.type === 'deposit' && t.status === 'completed')
                   .reduce((sum, t) => sum + t.amount, 0)
               )}₫
             </div>
             <div className="wallet-balance-stat">
-              <ArrowUpRight size={16} /> Đã chi: {f(
+              <ArrowUpRight size={16} /> Đã chi: {formatCurrency(
                 myTransactions.filter(t => t.type === 'payment' || (t.type === 'deposit' && t.amount < 0))
                   .reduce((sum, t) => sum + Math.abs(t.amount < 0 ? t.amount : 0), 0)
               )}₫
@@ -645,7 +644,7 @@ const WalletPage = () => {
                     dispatchDeposit({ type: 'select_amount', amount: String(amount) });
                   }}
                 >
-                  {f(amount)}₫
+                  {formatCurrency(amount)}₫
                 </button>
               ))}
             </div>
