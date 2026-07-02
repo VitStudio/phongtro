@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/useAuth';
-import { Wallet, LogOut, LayoutDashboard, CheckSquare, Menu, X, PlusCircle, Crown } from 'lucide-react';
+import { Wallet, LogOut, LayoutDashboard, BarChart3, Menu, X, PlusCircle, Crown } from 'lucide-react';
 import logo from '../../assets/img/logo.png';
 
 const Navbar = () => {
@@ -60,7 +60,7 @@ const Navbar = () => {
                 )}
                 {displayUser.role === 'admin' && (
                   <Link to="/admin" className="nav-app-link-icon">
-                    <CheckSquare size={16} /> Duyệt Tin
+                    <BarChart3 size={16} /> Quản Trị
                   </Link>
                 )}
               </div>
@@ -114,7 +114,7 @@ const Navbar = () => {
             <Link to="/landlord" onClick={handleNav} className="nav-mobile-link">📊 Dashboard</Link>
           )}
           {displayUser.role === 'admin' && (
-            <Link to="/admin" onClick={handleNav} className="nav-mobile-link">✅ Duyệt Tin</Link>
+            <Link to="/admin" onClick={handleNav} className="nav-mobile-link">📊 Quản Trị</Link>
           )}
           <button type="button" onClick={handleLogout} className="nav-mobile-logout">🚪 Đăng xuất</button>
         </div>

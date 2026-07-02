@@ -822,8 +822,10 @@ input:checked + .slider:before { transform: translateX(26px); }
 /* Dark variant for modals on dark-themed pages (e.g. Roommate Finder) */
 .modal-dark.modal-content-box {
   background: #161b2e !important;
-  border: 1px solid rgba(99, 102, 241, 0.2);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(99, 102, 241, 0.1);
   color: #f1f5f9;
 }
 

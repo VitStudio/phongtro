@@ -23,7 +23,7 @@ const BANK_INFO = {
   shortName: 'VCB',
   name: 'Ngân hàng TMCP Ngoại thương Việt Nam (Vietcombank)',
   accountNo: '1010101010',
-  accountName: 'CONG TY TNHH PHONGTROGENZ',
+  accountName: 'CONG TY TNHH HOMIE VIET NAM',
   branch: 'Hồ Chí Minh'
 };
 

@@ -100,14 +100,14 @@ const ProfilePage = () => {
         amount: -price,
         method: 'vip_subscription',
         status: 'completed',
-        description: `Mua gói VIP ${plan === 'annual' ? 'Năm' : 'Tháng'}`
+        description: `Mua Gói Đẩy tin ${plan === 'annual' ? 'Năm' : 'Tháng'}`
       });
       setBuySuccess(true);
       setTimeout(() => {
         setShowBuyModal(false);
         setBuySuccess(false);
       }, 2000);
-      toast.success(`🎉 Kích hoạt gói VIP ${plan === 'annual' ? 'Năm' : 'Tháng'} thành công!`);
+      toast.success(`🎉 Kích hoạt Gói Đẩy tin ${plan === 'annual' ? 'Năm' : 'Tháng'} thành công!`);
     } else {
       toast.error('Số dư không đủ. Vui lòng nạp thêm tiền!');
     }

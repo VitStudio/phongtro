@@ -75,7 +75,7 @@ const PricingSection = () => {
         amount: -price,
         method: 'vip_subscription',
         status: 'completed',
-        description: `Mua gói VIP ${plan === 'annual' ? 'Năm' : 'Tháng'} qua Landing`,
+        description: `Mua Gói Đẩy tin ${plan === 'annual' ? 'Năm' : 'Tháng'} qua Landing`,
       });
       dispatchPurchase({ type: 'purchaseSuccess' });
       setTimeout(() => dispatchPurchase({ type: 'closeVipModal' }), 2000);
@@ -150,26 +150,24 @@ const PricingSection = () => {
             </Link>
           </div>
 
-          {/* ── Gói VIP ── */}
+          {/* ── Gói Đẩy tin ── */}
           <div className="pricing-card pricing-card--vip">
             <div className="badge badge-vip mb-4 pricing-badge-popular">PHỔ BIẾN NHẤT</div>
-            <h3 className="heading-3 mb-2">Gói VIP</h3>
+            <h3 className="heading-3 mb-2">Gói Đẩy tin</h3>
             <p className="text-muted mb-6">
-              Tiếp cận tối đa sinh viên. Phù hợp chủ nhà muốn lấp phòng gấp.
+              Tiếp cận tối đa sinh viên. Phù hợp chủ nhà muốn cho thuê phòng gấp.
             </p>
             <div className="heading-1 text-gradient mb-8" style={{ fontSize: '1.75rem' }}>
               {formatCurrency(vipPrice)}₫{' '}
               <span className="pricing-price-unit">/ {vipPeriodLabel}</span>
             </div>
             <ul className="pricing-feat-list flex-col gap-4 mb-8 flex-1">
-              <FeatureItem iconClass="text-primary" bold>5% giá phòng / tin</FeatureItem>
               <FeatureItem iconClass="text-primary" bold>Được ghim lên đầu trang tìm kiếm</FeatureItem>
-              <FeatureItem iconClass="text-primary">Làm mới tin mỗi 4h</FeatureItem>
-              <FeatureItem iconClass="text-primary">100% Xác thực thực địa (On-site)</FeatureItem>
-              <FeatureItem iconClass="text-primary">Tối đa 200.000₫ / tin</FeatureItem>
+              <FeatureItem iconClass="text-primary" bold>Làm mới tin mỗi 4h</FeatureItem>
+              <FeatureItem iconClass="text-primary" bold>100% Xác thực thực địa (On-site)</FeatureItem>
             </ul>
             <button type="button" className="btn btn-primary w-full justify-center" onClick={handleBuyVip}>
-              <Crown size={18} aria-hidden="true" /> Mua Gói VIP
+              <Crown size={18} aria-hidden="true" /> Mua Gói Đẩy tin
             </button>
           </div>
 
@@ -199,7 +197,7 @@ const PricingSection = () => {
       >
         <div className="flex-col gap-4 pricing-login-centered">
           <div className="pricing-login-emoji">🔑</div>
-          <p className="text-muted">Vui lòng đăng nhập với vai trò Chủ Trọ để mua gói VIP.</p>
+          <p className="text-muted">Vui lòng đăng nhập với vai trò Chủ Trọ để mua Gói Đẩy tin.</p>
           <div className="flex gap-3 justify-center flex-wrap mt-4">
             <button
               type="button"

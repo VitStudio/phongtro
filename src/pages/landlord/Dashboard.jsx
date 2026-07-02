@@ -146,7 +146,7 @@ const Dashboard = () => {
           </div>
           <div>
             <div className="text-muted stat-label">
-              {isVip ? 'Gói VIP' : 'Gói dịch vụ'}
+              {isVip ? 'Gói Đẩy tin' : 'Gói dịch vụ'}
             </div>
             <div className="heading-2 stat-service-title">
               {isVip ? (

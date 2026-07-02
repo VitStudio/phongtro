@@ -24,7 +24,7 @@ const VipPurchaseModal = ({ isOpen, onClose, currentUser, onConfirm, buySuccess 
     <GlassModal
       isOpen={isOpen}
       onClose={handleClose}
-      title="Mua Gói VIP"
+      title="Mua Gói Đẩy tin"
     >
       {buySuccess ? (
         <div className="flex-col gap-4" style={{ textAlign: 'center', padding: '20px' }}>
@@ -32,7 +32,7 @@ const VipPurchaseModal = ({ isOpen, onClose, currentUser, onConfirm, buySuccess 
             <Check size={44} className="text-success" />
           </div>
           <h3 className="heading-3">Kích hoạt thành công! 🎉</h3>
-          <p className="text-muted">Gói VIP đã được kích hoạt. Tận hưởng các quyền lợi đặc biệt!</p>
+          <p className="text-muted">Gói Đẩy tin đã được kích hoạt. Tận hưởng các quyền lợi đặc biệt!</p>
         </div>
       ) : (
         <div className="flex-col gap-4">
@@ -41,7 +41,7 @@ const VipPurchaseModal = ({ isOpen, onClose, currentUser, onConfirm, buySuccess 
           </p>
 
           {/* Plan selector */}
-          <div className="vip-plan-grid" aria-label="Chọn gói VIP">
+          <div className="vip-plan-grid" aria-label="Chọn Gói Đẩy tin">
             <button
               type="button"
               aria-pressed={buyPlan === 'monthly'}

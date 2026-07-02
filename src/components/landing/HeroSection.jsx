@@ -24,8 +24,8 @@ const HeroSection = () => {
           </div>
           
           <h1 className="heading-1 hero-title mb-6">
-            Tìm phòng trọ GenZ. <br/>
-            <span className="text-gradient">Nhanh chóng & An toàn.</span>
+            Lướt homie, <br/>
+            <span className="text-gradient"> kiếm homate</span>
           </h1>
           
           <p className="text-muted hero-subtitle mb-10">

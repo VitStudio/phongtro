@@ -161,7 +161,7 @@ const CreateListing = () => {
           {/* Package selection */}
           <div>
             <h3 className="heading-3 package-heading">
-              {isVipUser ? '⭐ Đăng tin với gói VIP (Miễn phí)' : 'Chọn gói đăng tin'}
+              {isVipUser ? '⭐ Đăng tin với Gói Đẩy tin (Miễn phí)' : 'Chọn gói đăng tin'}
             </h3>
             <div className="two-col-grid grid-2col-responsive">
               <button
@@ -185,7 +185,7 @@ const CreateListing = () => {
                 <span className="badge badge-vip text-xs">
                   <Sparkles size={12} /> {isVipUser ? 'VIP KÍCH HOẠT' : 'VIP TỐI ƯU'}
                 </span>
-                <div className="plan-title">Gói VIP</div>
+                <div className="plan-title">Gói Đẩy tin</div>
                 <div className="text-muted plan-desc">Ghim đầu trang, tiếp cận gấp 10×</div>
                 <div className="plan-price plan-price-vip">
                   {isVipUser ? '0₫ (VIP)' : '100.000₫'}
@@ -195,7 +195,7 @@ const CreateListing = () => {
             {isVipUser && (
               <div className="vip-note">
                 <Crown size={14} className="icon-spaced-right" />
-                🎉 Bạn đang có gói VIP — đăng tin miễn phí và bài đăng tự động được gắn huy hiệu VIP!
+                🎉 Bạn đang có Gói Đẩy tin — đăng tin miễn phí và bài đăng tự động được gắn huy hiệu VIP!
               </div>
             )}
           </div>

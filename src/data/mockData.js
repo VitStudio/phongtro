@@ -7,7 +7,7 @@ export const VIP_ANNUAL_DAYS = 365;
 
 import { listingImages } from './listingImages';
 
-export const DATA_VERSION = 'v4';
+export const DATA_VERSION = 'v5';
 
 const now = new Date();
 const thirtyDaysFromNow = new Date(now.getTime() + VIP_MONTHLY_DAYS * 24 * 60 * 60 * 1000).toISOString();
@@ -42,7 +42,7 @@ export const mockUsers = [
     id: 'u3',
     role: 'admin',
     name: 'Admin Hệ Thống',
-    email: 'admin@phongtrogenz.vn',
+    email: 'admin@homie.vn',
     phone: '0987654321',
     wallet_balance: 0,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin',

@@ -68,7 +68,8 @@ const Chat = () => {
   const contactId = queryParams.get('contactId');
 
   const [threads, setThreads] = useState(() => {
-    const saved = localStorage.getItem('homie_chat_threads');
+    // Try versioned key first, then fallback to old key for migration
+    const saved = localStorage.getItem('homie_chat_threads:v1') || localStorage.getItem('homie_chat_threads');
     return saved ? JSON.parse(saved) : INITIAL_THREADS;
   });
 
@@ -77,16 +78,15 @@ const Chat = () => {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
 
-  // Automatically sync threads to local storage
+  // Single combined effect: handle contactId + sync to localStorage
+  // Breaking the chain: previously two effects where setThreads in effect 2
+  // triggered effect 1, causing an extra re-render cycle.
   useEffect(() => {
-    localStorage.setItem('homie_chat_threads', JSON.stringify(threads));
-  }, [threads]);
+    let currentThreads = threads;
+    let didCreateThread = false;
 
-  // Handle URL change or redirect from Swipes/Details
-  useEffect(() => {
     if (contactId) {
-      // Check if thread already exists
-      const exists = threads.some(t => t.id === contactId);
+      const exists = currentThreads.some(t => t.id === contactId);
       if (!exists) {
         // Create new thread dynamically
         let newContact = null;
@@ -114,10 +114,22 @@ const Chat = () => {
         }
 
         if (newContact) {
-          setThreads(prev => [newContact, ...prev]);
+          currentThreads = [newContact, ...currentThreads];
+          didCreateThread = true;
         }
       }
       setActiveThreadId(contactId);
+    }
+
+    // Sync to localStorage with versioned key — do it here for both cases
+    // so setThreads + localStorage save happen in the same effect body.
+    localStorage.setItem('homie_chat_threads:v1', JSON.stringify(currentThreads));
+
+    if (didCreateThread) {
+      // Update state — this will trigger a re-render + re-run of this effect,
+      // but the next run will NOT create a thread (already exists) so it's
+      // just a harmless re-sync to localStorage.
+      setThreads(currentThreads);
     }
   }, [contactId, threads]);
 
